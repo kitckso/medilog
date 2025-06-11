@@ -169,7 +169,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                 {recordsForSelectedDate.map((record) => (
                   <Card
                     key={record.id}
-                    className="p-3 flex justify-between items-center"
+                    className="p-3 flex flex-row justify-between items-center"
                   >
                     <div>
                       <p className="font-medium text-slate-800">

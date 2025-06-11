@@ -32,7 +32,7 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
+    <div className="flex justify-center items-center bg-white p-4 rounded-lg shadow">
       <ShadcnCalendar
         mode="single"
         month={currentMonth}
