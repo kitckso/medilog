@@ -153,7 +153,7 @@ const RecordView: React.FC<RecordViewProps> = ({ medicines, onRecordIntake, onNa
       <Button
         onClick={handleRecord}
         disabled={!selectedMedicineId || !selectedDate || !selectedTime}
-        className="w-full bg-sky-500 hover:bg-sky-600 text-white text-lg py-3"
+        className="w-full bg-sky-500 hover:bg-sky-600 text-white text-lg py-6"
       >
         <PlusIcon className="w-6 h-6 mr-2" /> Record Intake
       </Button>

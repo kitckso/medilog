@@ -54,7 +54,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({ medicines, on
         </div>
         <Button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-600 text-white"
+          className="w-full bg-green-500 hover:bg-green-600 text-white text-lg py-6"
         >
           <PlusIcon className="w-5 h-5 mr-2" /> Add Medicine
         </Button>
