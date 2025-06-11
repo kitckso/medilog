@@ -2,7 +2,15 @@
 
 MediLog is a simple and intuitive web application designed to help you track your medicine and supplement intake. Built with React, TypeScript, and Tailwind Shadcn UI components, it provides a clean interface to record your daily doses, manage your list of medicines, and review your intake history.
 
-**Important:** All your data (medicines and intake records) is stored locally in your browser's `localStorage`. This means your data is tied to the specific browser and device you are using. Clearing your browser's data (e.g., cookies, site data) will result in the loss of your MediLog information. Data cannot be synced or shared across different devices.
+> ⚠️ **IMPORTANT WARNING**  
+> MediLog is intended **only** for casual, non-critical recording of your medicine and supplement intake.  
+> **Do not** rely on MediLog for tracking essential or life-critical medication schedules.  
+> **All data** is stored **locally** in your browser’s `localStorage`. Clearing your browser data (cookies, site data, or cache) will permanently erase **all** your MediLog entries. There is no cloud sync or cross-device backup.  
+
+## Live Demo
+
+Try it out here:  
+https://kitckso-medilog.netlify.app/
 
 ## ⚙️ Installation and Setup
 
