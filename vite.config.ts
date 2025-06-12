@@ -27,16 +27,28 @@ export default defineConfig({
         display: "standalone", // Makes the app feel more native (hides browser UI)
         icons: [
           {
-            src: "/pwa-192x192.png", // Path to your 192x192 icon
-            sizes: "192x192",
-            type: "image/png",
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png'
           },
           {
-            src: "/pwa-512x512.png", // Path to your 512x512 icon
-            sizes: "512x512",
-            type: "image/png",
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
           },
-        ],
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any'  
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
+          }
+        ]
         // You can add more properties like screenshots, related_applications, etc.
         // For more details, refer to: https://developer.mozilla.org/en-US/docs/Web/Manifest
       },
