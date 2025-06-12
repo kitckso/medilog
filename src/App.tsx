@@ -37,6 +37,16 @@ const App: React.FC = () => {
     setIntakeRecords(prevRecords => storageService.addIntakeRecordItem(prevRecords, medicineId, medicineName, timestamp));
   }, []);
 
+  /**
+   * Callback to reorder medicine items.
+   * This function is passed to ManageMedicinesView and is called when a drag-and-drop reorder occurs.
+   * @param newOrder The new array of MedicineItem in their reordered sequence.
+   */
+  const handleReorderMedicines = useCallback((newOrder: MedicineItem[]) => {
+    setMedicines(newOrder); // Update the state with the new order
+    storageService.saveMedicines(newOrder); // Persist the new order to local storage
+  }, []);
+
   const handleDeleteRecord = useCallback((id: string) => {
     setIntakeRecords(prevRecords => storageService.deleteIntakeRecordItem(prevRecords, id));
   }, []);
@@ -51,7 +61,7 @@ const App: React.FC = () => {
       case 'history':
         return <HistoryView records={intakeRecords} onDeleteRecord={handleDeleteRecord} />;
       case 'manage':
-        return <ManageMedicinesView medicines={medicines} onAddMedicine={handleAddMedicine} onDeleteMedicine={handleDeleteMedicine} />;
+        return <ManageMedicinesView medicines={medicines} onAddMedicine={handleAddMedicine} onDeleteMedicine={handleDeleteMedicine} onReorderMedicines={handleReorderMedicines}/>;
       default:
         return <RecordView medicines={medicines} onRecordIntake={handleRecordIntake} onNavigateToManage={() => setCurrentView('manage')} />;
     }
