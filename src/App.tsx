@@ -7,6 +7,7 @@ import ManageMedicinesView from './components/ManageMedicinesView';
 import RecordView from './components/RecordView';
 import * as storageService from './services/storageService';
 import type { AppView, IntakeRecord, MedicineItem } from './types';
+import { Toaster } from '@/components/ui/sonner';
 
 const App: React.FC = () => {
   const [medicines, setMedicines] = useState<MedicineItem[]>([]);
@@ -63,6 +64,7 @@ const App: React.FC = () => {
         {renderView()}
       </main>
       <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
+      <Toaster position="top-right" />
     </div>
   );
 };
