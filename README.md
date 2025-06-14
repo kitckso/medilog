@@ -62,6 +62,17 @@ Upon launching the application, you'll be greeted with the "Record Intake" view.
     *   Use the "Add New Medicine/Supplement" form to add new items to your list.
     *   Your existing medicines are displayed below. Use the trash icon next to a medicine to delete it from your list. Note that deleting a medicine here does not remove its past intake records.
 
+## 📸 Screenshots
+
+Here are some screenshots of MediLog running on a mobile device:
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px;">
+    <img src="assets/images/screenshot1.png" alt="Screenshot of the Record Intake view" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="assets/images/screenshot2.png" alt="Screenshot of the History list view" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="assets/images/screenshot3.png" alt="Screenshot of the History Calendar view" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="assets/images/screenshot4.png" alt="Screenshot of the Manage Medicines view" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+</div>
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you have suggestions for improvements, bug fixes, or new features, please open an issue or submit a pull request.
