@@ -1,5 +1,5 @@
 // components/BottomNavigation.tsx
-import { CalendarDaysIcon, CogIcon, PillIcon } from 'lucide-react';
+import { CalendarDaysIcon, CogIcon, PillIcon, SettingsIcon } from 'lucide-react';
 import React from 'react';
 import type { AppView } from '../types';
 import { Button } from './ui/button'; // Import Shadcn Button
@@ -14,6 +14,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavi
     { view: 'record' as AppView, label: 'Record', icon: PillIcon },
     { view: 'history' as AppView, label: 'History', icon: CalendarDaysIcon },
     { view: 'manage' as AppView, label: 'Manage', icon: CogIcon },
+    { view: 'settings' as AppView, label: 'Settings', icon: SettingsIcon },
   ];
 
   return (
