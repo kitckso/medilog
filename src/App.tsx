@@ -5,9 +5,11 @@ import Header from './components/Header';
 import HistoryView from './components/HistoryView';
 import ManageMedicinesView from './components/ManageMedicinesView';
 import RecordView from './components/RecordView';
+import SettingsView from './components/SettingsView'; // Import SettingsView
 import * as storageService from './services/storageService';
 import type { AppView, IntakeRecord, MedicineItem } from './types';
 import { Toaster } from '@/components/ui/sonner';
+import { toast } from 'sonner'; // Import toast
 
 const App: React.FC = () => {
   const [medicines, setMedicines] = useState<MedicineItem[]>([]);
@@ -51,6 +53,41 @@ const App: React.FC = () => {
     setIntakeRecords(prevRecords => storageService.deleteIntakeRecordItem(prevRecords, id));
   }, []);
 
+  // Handler functions for SettingsView
+  const handleExportData = useCallback(() => {
+    storageService.exportData();
+    toast.success('Data exported successfully!');
+  }, []);
+
+  const handleImportData = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      toast.info('No file selected.');
+      return;
+    }
+    if (!confirm('Importing data will overwrite existing data. Are you sure you want to proceed?')) {
+      event.target.value = ''; // Reset file input
+      return;
+    }
+    const result = await storageService.importData(file);
+    if (result.success && result.medicines && result.intakeRecords) {
+      setMedicines(result.medicines);
+      setIntakeRecords(result.intakeRecords);
+      toast.success('Data imported successfully!');
+    } else {
+      toast.error(`Import failed: ${result.error}`);
+    }
+    // Reset file input value to allow importing the same file again if needed
+    event.target.value = '';
+  }, []);
+
+  const handleClearData = useCallback(() => {
+    storageService.clearAllData();
+    setMedicines(storageService.getMedicines()); // Reload medicines (will be default or empty based on storageService logic)
+    setIntakeRecords(storageService.getIntakeRecords()); // Reload records (will be empty)
+    toast.success('All data cleared successfully!');
+  }, []);
+
   const renderView = () => {
     if (isLoading) {
         return <div className="p-4 text-center text-slate-600">Loading your data...</div>;
@@ -62,6 +99,14 @@ const App: React.FC = () => {
         return <HistoryView records={intakeRecords} onDeleteRecord={handleDeleteRecord} />;
       case 'manage':
         return <ManageMedicinesView medicines={medicines} onAddMedicine={handleAddMedicine} onDeleteMedicine={handleDeleteMedicine} onReorderMedicines={handleReorderMedicines}/>;
+      case 'settings': // Add settings case
+        return (
+          <SettingsView
+            onExportData={handleExportData}
+            onImportData={handleImportData}
+            onClearData={handleClearData}
+          />
+        );
       default:
         return <RecordView medicines={medicines} onRecordIntake={handleRecordIntake} onNavigateToManage={() => setCurrentView('manage')} />;
     }

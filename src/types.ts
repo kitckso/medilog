@@ -10,4 +10,4 @@ export interface IntakeRecord {
   timestamp: number; // Unix timestamp
 }
 
-export type AppView = 'record' | 'history' | 'manage';
+export type AppView = 'record' | 'history' | 'manage' | 'settings';

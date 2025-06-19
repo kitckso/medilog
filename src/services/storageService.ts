@@ -102,3 +102,68 @@ export const deleteIntakeRecordItem = (intakeRecords: IntakeRecord[], id: string
   saveIntakeRecords(updatedRecords);
   return updatedRecords;
 };
+
+export const exportData = (): void => {
+  const medicines = getMedicines();
+  const intakeRecords = getIntakeRecords();
+  const data = { medicines, intakeRecords };
+  const jsonString = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'medilog_data.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+export const importData = async (file: File): Promise<{ success: boolean; medicines?: MedicineItem[]; intakeRecords?: IntakeRecord[]; error?: string }> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const jsonString = event.target?.result as string;
+        const data = JSON.parse(jsonString);
+
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid file format: Not a JSON object.');
+        }
+
+        if (!Array.isArray(data.medicines) || !Array.isArray(data.intakeRecords)) {
+          throw new Error('Invalid data structure: medicines or intakeRecords are not arrays.');
+        }
+
+        // Further validation could be added here to check item structures
+        const medicines: MedicineItem[] = data.medicines;
+        const intakeRecords: IntakeRecord[] = data.intakeRecords;
+
+        saveMedicines(medicines);
+        saveIntakeRecords(intakeRecords);
+        resolve({ success: true, medicines, intakeRecords });
+      } catch (e: any) {
+        console.error("Error importing data:", e);
+        resolve({ success: false, error: e.message || 'Failed to parse or validate the imported file.' });
+      }
+    };
+    reader.onerror = (error) => {
+      console.error("FileReader error:", error);
+      resolve({ success: false, error: 'Failed to read the file.' });
+    };
+    reader.readAsText(file);
+  });
+};
+
+export const clearAllData = (): void => {
+  saveMedicines([]);
+  saveIntakeRecords([]);
+  // Consider also clearing any default medicines if they are re-added on empty
+  // For now, this just clears the current lists.
+  // To truly reset to initial state, one might need to localStorage.removeItem for the keys
+  // and then reload the app or re-initialize defaults.
+  // However, the current getMedicines() logic re-adds defaults if the list is empty.
+  // So, to ensure a true clear, we'll remove the items.
+  localStorage.removeItem(MEDICINES_KEY);
+  localStorage.removeItem(INTAKE_RECORDS_KEY);
+};
