@@ -27,7 +27,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavi
             key={item.view}
             variant="ghost" // Use ghost variant for a cleaner look
             onClick={() => onNavigate(item.view)}
-            className={`flex flex-col items-center justify-center p-2 rounded-lg w-1/3 h-auto
+            className={`flex flex-col items-center justify-center p-2 rounded-lg w-1/4 h-auto
                         ${isActive ? 'text-sky-600 bg-sky-100 hover:bg-sky-100/90' : 'text-slate-600 hover:bg-slate-100'}`}
             aria-label={`Navigate to ${item.label}`}
           >

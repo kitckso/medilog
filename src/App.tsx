@@ -82,9 +82,6 @@ const App: React.FC = () => {
   }, []);
 
   const handleClearData = useCallback(() => {
-    if (!confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-      return;
-    }
     storageService.clearAllData();
     setMedicines(storageService.getMedicines()); // Reload medicines (will be default or empty based on storageService logic)
     setIntakeRecords(storageService.getIntakeRecords()); // Reload records (will be empty)
