@@ -27,6 +27,7 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  DragOverlay,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -63,7 +64,7 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
     transform: CSS.Transform.toString(transform), // Apply CSS transform for positioning
     transition, // Apply CSS transition for smooth movement
     zIndex: isDragging ? 10 : 0, // Bring dragged item to front
-    opacity: isDragging ? 0.8 : 1, // Slightly dim dragged item
+    opacity: isDragging ? 0 : 1, // Hide original item while dragging
     // Add a slight shadow when dragging for better visual feedback
     boxShadow: isDragging ? "0 4px 8px rgba(0,0,0,0.1)" : "none",
   };
@@ -120,6 +121,8 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
     null
   );
 
+  const [activeMedicine, setActiveMedicine] = useState<MedicineItem | null>(null);
+
   // Configure DND-KIT sensors for detecting drag events
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -141,6 +144,11 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
     })
   );
 
+  const handleDragStart = (event: DragEndEvent) => {
+    const { active } = event;
+    setActiveMedicine(medicines.find((med) => med.id === active.id) || null);
+  };
+
   /**
    * Handles the end of a drag operation.
    * Reorders the medicines array based on the drag result and updates the parent state.
@@ -159,6 +167,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
       const newOrder = arrayMove(medicines, oldIndex, newIndex);
       onReorderMedicines(newOrder); // Call the prop function to update the parent component's state
     }
+    setActiveMedicine(null);
   };
 
   const handleAdd = (e: React.FormEvent) => {
@@ -230,6 +239,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
           <DndContext
             sensors={sensors} // Pass configured sensors
             collisionDetection={closestCenter} // Strategy for detecting collisions between draggable and droppable items
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd} // Callback fired when a drag operation ends
           >
             {/* SortableContext manages the collection of sortable items */}
@@ -249,6 +259,14 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
                 ))}
               </ul>
             </SortableContext>
+            <DragOverlay>
+              {activeMedicine ? (
+                <SortableMedicineItem
+                  medicine={activeMedicine}
+                  setMedicineToDelete={setMedicineToDelete}
+                />
+              ) : null}
+            </DragOverlay>
           </DndContext>
         )}
       </div>
