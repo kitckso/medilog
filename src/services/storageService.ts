@@ -84,13 +84,15 @@ export const addIntakeRecordItem = (
   intakeRecords: IntakeRecord[],
   medicineId: string,
   medicineName: string,
-  timestamp: number // Accept custom timestamp
+  timestamp: number, // Accept custom timestamp
+  details?: string // Optional details parameter
 ): IntakeRecord[] => {
   const newRecord: IntakeRecord = {
     id: Date.now().toString() + Math.random().toString(36).substring(2, 9), // Record ID is still unique now
     medicineId,
     medicineName,
     timestamp, // Use provided timestamp
+    ...(details && details.trim() && { details: details.trim() }), // Only add details if provided and not empty
   };
   const updatedRecords = [...intakeRecords, newRecord];
   saveIntakeRecords(updatedRecords);

@@ -1,6 +1,7 @@
 // components/ManageMedicinesView.tsx
 import React, { useState } from "react";
 import { PlusIcon, TrashIcon, GripVerticalIcon } from "lucide-react"; // Added GripVerticalIcon for drag handle
+import { toast } from "sonner";
 import type { MedicineItem } from "../types";
 
 // Shadcn UI components
@@ -71,26 +72,26 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
     <Card
       ref={setNodeRef}
       style={style}
-      className="px-4 py-2 flex flex-row justify-between items-center bg-white shadow-sm border border-slate-200"
+      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-emerald-400"
     >
       {/* Drag handle: Attach listeners and attributes for drag functionality */}
       <button
-        className="p-2 cursor-grab touch-none text-slate-400 hover:text-slate-600"
+        className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
         {...listeners} // Event listeners for drag start/move/end
         {...attributes} // Accessibility attributes for drag and drop
         aria-label="Drag to reorder medicine"
       >
-        <GripVerticalIcon className="w-5 h-5" />
+        <GripVerticalIcon className="w-4 h-4 sm:w-5 sm:h-5" />
       </button>
-      <span className="flex-grow text-slate-800 ml-2">{medicine.name}</span>
+      <span className="flex-grow text-slate-800 ml-2 sm:ml-3 font-medium text-sm sm:text-base">{medicine.name}</span>
       <Button
         variant="ghost"
         size="icon"
         onClick={() => setMedicineToDelete(medicine)}
-        className="text-red-500 hover:text-red-700"
+        className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-1 sm:ml-2 shrink-0"
         aria-label={`Delete ${medicine.name}`}
       >
-        <TrashIcon className="w-5 h-5" />
+        <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
       </Button>
     </Card>
   );
@@ -147,7 +148,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMedicineName.trim() === "") {
-      alert("Please enter a medicine name."); // Consider using a toast/notification for better UX
+      toast.error("Please enter a medicine name.");
       return;
     }
     onAddMedicine(newMedicineName.trim());
@@ -155,49 +156,59 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   };
 
   return (
-    <div className="p-4 space-y-6">
-      <h2 className="text-xl font-semibold text-slate-700 mb-4">
-        Manage Medicines
-      </h2>
+    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl mx-auto">
+      <div className="text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Manage Medicines</h2>
+        <p className="text-sm sm:text-base text-slate-600">Add, reorder, and manage your medications and supplements</p>
+      </div>
 
       {/* Form for adding new medicines */}
-      <form
-        onSubmit={handleAdd}
-        className="space-y-3 bg-white p-4 rounded-lg shadow"
-      >
-        <div>
-          <label
-            htmlFor="new-medicine"
-            className="block text-sm font-medium text-slate-700"
+      <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">Add New Medicine/Supplement</h3>
+        <form onSubmit={handleAdd} className="space-y-3 sm:space-y-4">
+          <div>
+            <label
+              htmlFor="new-medicine"
+              className="block text-sm font-medium text-slate-700 mb-2"
+            >
+              Medicine Name
+            </label>
+            <Input
+              id="new-medicine"
+              type="text"
+              value={newMedicineName}
+              onChange={(e) => setNewMedicineName(e.target.value)}
+              placeholder="e.g., Vitamin B12, Aspirin, Fish Oil"
+              className="w-full text-sm sm:text-base"
+            />
+          </div>
+          <Button
+            type="submit"
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
           >
-            Add New Medicine/Supplement
-          </label>
-          <Input
-            id="new-medicine"
-            type="text"
-            value={newMedicineName}
-            onChange={(e) => setNewMedicineName(e.target.value)}
-            placeholder="e.g., Vitamin B12"
-            className="mt-1"
-          />
-        </div>
-        <Button
-          type="submit"
-          className="w-full bg-green-500 hover:bg-green-600 text-white text-lg py-6"
-        >
-          <PlusIcon className="w-5 h-5 mr-2" /> Add Medicine
-        </Button>
-      </form>
+            <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Add Medicine
+          </Button>
+        </form>
+      </div>
 
       {/* Section for displaying and reordering existing medicines */}
-      <div>
-        <h3 className="text-lg font-medium text-slate-700 mb-2">
-          Your Medicines:
-        </h3>
+      <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
+          <h3 className="text-base sm:text-lg font-semibold text-slate-800">
+            Your Medicines ({medicines.length})
+          </h3>
+          {medicines.length > 0 && (
+            <p className="text-xs sm:text-sm text-slate-500">Drag to reorder</p>
+          )}
+        </div>
         {medicines.length === 0 ? (
-          <p className="text-slate-500 text-center py-4">
-            You haven't added any medicines yet.
-          </p>
+          <div className="text-center py-6 sm:py-8">
+            <div className="bg-slate-50 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <PlusIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+            </div>
+            <p className="text-slate-500 text-base sm:text-lg">No medicines added yet</p>
+            <p className="text-slate-400 text-xs sm:text-sm">Add your first medicine above to get started</p>
+          </div>
         ) : (
           // DndContext provides the overall drag and drop environment
           <DndContext
@@ -210,7 +221,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
               items={medicines.map((med) => med.id)} // Array of unique IDs for all sortable items
               strategy={verticalListSortingStrategy} // Defines how items are sorted visually in a vertical list
             >
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {medicines.map((med) => (
                   // Each sortable item must be wrapped in an element with a unique key
                   <li key={med.id}>

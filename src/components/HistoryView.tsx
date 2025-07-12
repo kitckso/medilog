@@ -94,14 +94,18 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   const renderListView = () => {
     if (sortedRecords.length === 0) {
       return (
-        <div className="p-4 text-center text-slate-600">
-          No intake history yet.
+        <div className="text-center py-8 sm:py-12">
+          <div className="bg-slate-50 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+            <TrashIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+          </div>
+          <p className="text-slate-500 text-base sm:text-lg">No intake history yet</p>
+          <p className="text-slate-400 text-xs sm:text-sm">Start recording your medications to see them here</p>
         </div>
       );
     }
     let lastDateHeader: string | null = null;
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         {sortedRecords.map((record) => {
           const currentDateHeader = formatDateHeader(record.timestamp);
           const showDateHeader = currentDateHeader !== lastDateHeader;
@@ -111,28 +115,42 @@ const HistoryView: React.FC<HistoryViewProps> = ({
           return (
             <React.Fragment key={record.id}>
               {showDateHeader && (
-                <h3 className="text-lg font-semibold text-sky-700 pt-4 pb-2 border-b border-slate-200">
-                  {currentDateHeader}
-                </h3>
-              )}
-              <Card className="p-3 flex flex-row justify-between items-center">
-                <div>
-                  <p className="font-medium text-slate-800">
-                    {record.medicineName}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {formatTime(record.timestamp)}
-                  </p>
+                <div className="flex items-center my-4 sm:my-6 first:mt-0">
+                  <div className="flex-grow border-t border-slate-200"></div>
+                  <h3 className="px-3 sm:px-4 text-sm sm:text-lg font-semibold text-slate-600 bg-slate-50 rounded-full py-1 sm:py-2">
+                    {currentDateHeader}
+                  </h3>
+                  <div className="flex-grow border-t border-slate-200"></div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setRecordToDelete(record)} 
-                  className="text-red-500 hover:text-red-700"
-                  aria-label={`Delete record for ${record.medicineName}`}
-                >
-                  <TrashIcon className="w-5 h-5" />
-                </Button>
+              )}
+              <Card className="p-3 sm:p-4 hover:shadow-md transition-shadow duration-200 border-l-4 border-l-sky-400">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                      <h4 className="font-semibold text-slate-800 text-base sm:text-lg">
+                        {record.medicineName}
+                      </h4>
+                      <span className="text-xs sm:text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full w-fit">
+                        {formatTime(record.timestamp)}
+                      </span>
+                    </div>
+                    {record.details && (
+                      <div className="bg-sky-50 border border-sky-200 rounded-lg p-2 sm:p-3 mt-2 sm:mt-3">
+                        <p className="text-xs sm:text-sm font-medium text-sky-800 mb-1">Details:</p>
+                        <p className="text-xs sm:text-sm text-sky-700">{record.details}</p>
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setRecordToDelete(record)} 
+                    className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-2 sm:ml-4 shrink-0"
+                    aria-label={`Delete record for ${record.medicineName}`}
+                  >
+                    <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </Button>
+                </div>
               </Card>
             </React.Fragment>
           );
@@ -169,25 +187,35 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                 {recordsForSelectedDate.map((record) => (
                   <Card
                     key={record.id}
-                    className="p-3 flex flex-row justify-between items-center"
+                    className="p-4 hover:shadow-md transition-shadow duration-200 border-l-4 border-l-sky-400"
                   >
-                    <div>
-                      <p className="font-medium text-slate-800">
-                        {record.medicineName}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        {formatTime(record.timestamp)}
-                      </p>
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="font-semibold text-slate-800 text-lg">
+                            {record.medicineName}
+                          </h4>
+                          <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                            {formatTime(record.timestamp)}
+                          </span>
+                        </div>
+                        {record.details && (
+                          <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 mt-3">
+                            <p className="text-sm font-medium text-sky-800 mb-1">Details:</p>
+                            <p className="text-sm text-sky-700">{record.details}</p>
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setRecordToDelete(record)}
+                        className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-4 shrink-0"
+                        aria-label={`Delete record for ${record.medicineName}`}
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setRecordToDelete(record)}
-                      className="text-red-500 hover:text-red-700"
-                      aria-label={`Delete record for ${record.medicineName}`}
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </Button>
                   </Card>
                 ))}
               </div>
@@ -203,22 +231,26 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+      <div className="text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Intake History</h2>
+        <p className="text-sm sm:text-base text-slate-600">View and manage your medication records</p>
+      </div>
+
       {/* The Tabs component must wrap both the TabsList and TabsContent */}
       <Tabs
         value={viewMode}
         onValueChange={(value) => setViewMode(value as ViewMode)}
+        className="w-full"
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-slate-700">
-            Intake History
-          </h2>
-          {/* Move className="w-[200px]" to TabsList if it's for the buttons */}
-          <TabsList className="w-[200px] grid grid-cols-2">
-            <TabsTrigger value="list">List</TabsTrigger>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          </TabsList>
-        </div>
+        <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg sm:rounded-xl mb-4 sm:mb-6">
+          <TabsTrigger value="list" className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base">
+            List View
+          </TabsTrigger>
+          <TabsTrigger value="calendar" className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base">
+            Calendar View
+          </TabsTrigger>
+        </TabsList>
 
         {/* TabsContent must be inside the Tabs component */}
         <TabsContent value="list" className="mt-0">

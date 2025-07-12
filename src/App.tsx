@@ -35,8 +35,8 @@ const App: React.FC = () => {
     setMedicines(prevMedicines => storageService.deleteMedicineItem(prevMedicines, id));
   }, []);
 
-  const handleRecordIntake = useCallback((medicineId: string, medicineName: string, timestamp: number) => {
-    setIntakeRecords(prevRecords => storageService.addIntakeRecordItem(prevRecords, medicineId, medicineName, timestamp));
+  const handleRecordIntake = useCallback((medicineId: string, medicineName: string, timestamp: number, details?: string) => {
+    setIntakeRecords(prevRecords => storageService.addIntakeRecordItem(prevRecords, medicineId, medicineName, timestamp, details));
   }, []);
 
   /**
