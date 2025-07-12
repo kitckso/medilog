@@ -23,6 +23,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -75,14 +76,17 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
       className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-emerald-400"
     >
       {/* Drag handle: Attach listeners and attributes for drag functionality */}
-      <button
+      <div
         className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
         {...listeners} // Event listeners for drag start/move/end
         {...attributes} // Accessibility attributes for drag and drop
+        role="button"
+        tabIndex={0}
         aria-label="Drag to reorder medicine"
+        style={{ touchAction: 'none' }}
       >
         <GripVerticalIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-      </button>
+      </div>
       <span className="flex-grow text-slate-800 ml-2 sm:ml-3 font-medium text-sm sm:text-base">{medicine.name}</span>
       <Button
         variant="ghost"
@@ -118,7 +122,19 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
 
   // Configure DND-KIT sensors for detecting drag events
   const sensors = useSensors(
-    useSensor(PointerSensor), // For mouse and touch interactions
+    useSensor(PointerSensor, {
+      // For mouse interactions on desktop
+      activationConstraint: {
+        distance: 3,
+      },
+    }),
+    useSensor(TouchSensor, {
+      // Dedicated touch sensor for mobile devices
+      activationConstraint: {
+        delay: 200, // Longer delay for touch to distinguish from scrolling
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       // For keyboard accessibility
       coordinateGetter: sortableKeyboardCoordinates,
