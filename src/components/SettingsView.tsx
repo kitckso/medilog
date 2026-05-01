@@ -1,6 +1,7 @@
 // src/components/SettingsView.tsx
 import { Download, Trash2, Upload } from 'lucide-react';
 import React, { useRef, useState } from 'react';
+import packageJson from '../../package.json';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,14 +23,26 @@ interface SettingsViewProps {
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData, onClearData }) => {
-  // Use a ref for the file input for a more idiomatic React approach
   const importInputRef = useRef<HTMLInputElement>(null);
   const [isClearDataDialogOpen, setClearDataDialogOpen] = useState(false);
+  const [isImportDialogOpen, setImportDialogOpen] = useState(false);
 
   const handleImportClick = () => {
+    setImportDialogOpen(true);
+  };
+
+  const handleImportConfirm = () => {
+    setImportDialogOpen(false);
     importInputRef.current?.click();
   };
-  
+
+  const handleImportCancel = () => {
+    setImportDialogOpen(false);
+    if (importInputRef.current) {
+      importInputRef.current.value = '';
+    }
+  };
+
   const handleClearDataConfirm = () => {
     onClearData();
     setClearDataDialogOpen(false);
@@ -117,7 +130,34 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
             </div>
           </CardContent>
         </Card>
+
+        <div className="flex items-center justify-center gap-3 px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg sm:rounded-xl shadow-sm border border-slate-200">
+            <div className="bg-gradient-to-br from-sky-400 to-sky-600 w-7 h-7 rounded-md flex items-center justify-center">
+              <span className="text-sm font-bold text-white">{packageJson.name.charAt(0).toUpperCase()}</span>
+            </div>
+            <span className="text-sm font-semibold text-slate-700 capitalize">{packageJson.name}</span>
+            <span className="text-xs text-slate-400">·</span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 text-xs font-medium">
+              v{packageJson.version}
+            </span>
+          </div>
       </div>
+
+      {/* Import Confirmation Dialog */}
+      <AlertDialog open={isImportDialogOpen} onOpenChange={setImportDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Import Data?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Importing data will overwrite all existing medicines and intake records. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleImportCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleImportConfirm}>Import</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Confirmation Dialog for Clearing Data */}
       <AlertDialog open={isClearDataDialogOpen} onOpenChange={setClearDataDialogOpen}>

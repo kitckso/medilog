@@ -1,23 +1,13 @@
 // components/ManageMedicinesView.tsx
 import React, { useState } from "react";
-import { PlusIcon, TrashIcon, GripVerticalIcon } from "lucide-react"; // Added GripVerticalIcon for drag handle
+import { PlusIcon, TrashIcon, GripVerticalIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { MedicineItem } from "../types";
 
-// Shadcn UI components
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-// DND-KIT Imports for drag and drop functionality
 import {
   DndContext,
   closestCenter,
@@ -38,49 +28,42 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// --- SortableMedicineItem Component ---
-// This component represents a single draggable and sortable medicine item in the list.
 interface SortableMedicineItemProps {
   medicine: MedicineItem;
-  setMedicineToDelete: (medicine: MedicineItem) => void;
+  onDelete: (medicine: MedicineItem) => void;
 }
 
 const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
   medicine,
-  setMedicineToDelete,
+  onDelete,
 }) => {
-  // useSortable hook provides properties and methods to make an item sortable
   const {
     attributes,
     listeners,
-    setNodeRef, // Ref to attach to the DOM node for DND-KIT to track
+    setNodeRef,
     transform,
     transition,
-    isDragging, // Boolean indicating if the item is currently being dragged
-  } = useSortable({ id: medicine.id }); // Unique ID for the sortable item
+    isDragging,
+  } = useSortable({ id: medicine.id });
 
-  // Apply transform and transition for smooth dragging animation
   const style = {
-    transform: CSS.Transform.toString(transform), // Apply CSS transform for positioning
-    transition, // Apply CSS transition for smooth movement
-    zIndex: isDragging ? 10 : 0, // Bring dragged item to front
-    opacity: isDragging ? 0 : 1, // Hide original item while dragging
-    // Add a slight shadow when dragging for better visual feedback
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 0,
+    opacity: isDragging ? 0 : 1,
     boxShadow: isDragging ? "0 4px 8px rgba(0,0,0,0.1)" : "none",
   };
 
   return (
-    // Attach the ref and apply dynamic styles
     <Card
       ref={setNodeRef}
       style={style}
       className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-sky-400"
     >
-      {/* Drag handle: Attach listeners and attributes for drag functionality */}
       <div
         className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
-        {...listeners} // Event listeners for drag start/move/end
-        {...attributes} // Accessibility attributes for drag and drop
+        {...listeners}
+        {...attributes}
         role="button"
         tabIndex={0}
         aria-label="Drag to reorder medicine"
@@ -92,7 +75,7 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setMedicineToDelete(medicine)}
+        onClick={() => onDelete(medicine)}
         className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-1 sm:ml-2 shrink-0"
         aria-label={`Delete ${medicine.name}`}
       >
@@ -102,12 +85,12 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
   );
 };
 
-// --- ManageMedicinesView Component ---
 interface ManageMedicinesViewProps {
   medicines: MedicineItem[];
   onAddMedicine: (name: string) => void;
   onDeleteMedicine: (id: string) => void;
-  onReorderMedicines: (newOrder: MedicineItem[]) => void; // New prop to handle reordering
+  onReorderMedicines: (newOrder: MedicineItem[]) => void;
+  onRestoreMedicine: (medicine: MedicineItem) => void;
 }
 
 const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
@@ -115,33 +98,15 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   onAddMedicine,
   onDeleteMedicine,
   onReorderMedicines,
+  onRestoreMedicine,
 }) => {
   const [newMedicineName, setNewMedicineName] = useState("");
-  const [medicineToDelete, setMedicineToDelete] = useState<MedicineItem | null>(
-    null
-  );
-
   const [activeMedicine, setActiveMedicine] = useState<MedicineItem | null>(null);
 
-  // Configure DND-KIT sensors for detecting drag events
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      // For mouse interactions on desktop
-      activationConstraint: {
-        distance: 3,
-      },
-    }),
-    useSensor(TouchSensor, {
-      // Dedicated touch sensor for mobile devices
-      activationConstraint: {
-        delay: 200, // Longer delay for touch to distinguish from scrolling
-        tolerance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      // For keyboard accessibility
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   const handleDragStart = (event: DragEndEvent) => {
@@ -149,23 +114,13 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
     setActiveMedicine(medicines.find((med) => med.id === active.id) || null);
   };
 
-  /**
-   * Handles the end of a drag operation.
-   * Reorders the medicines array based on the drag result and updates the parent state.
-   * @param event The DragEndEvent object containing information about the drag operation.
-   */
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
-    // If the item was dragged to a different position
     if (active.id !== over?.id) {
-      // Find the original and new indices of the dragged item
       const oldIndex = medicines.findIndex((med) => med.id === active.id);
       const newIndex = medicines.findIndex((med) => med.id === over?.id);
-
-      // Use arrayMove utility from dnd-kit to get the new ordered array
       const newOrder = arrayMove(medicines, oldIndex, newIndex);
-      onReorderMedicines(newOrder); // Call the prop function to update the parent component's state
+      onReorderMedicines(newOrder);
     }
     setActiveMedicine(null);
   };
@@ -180,22 +135,25 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
     setNewMedicineName("");
   };
 
+  const handleDelete = (medicine: MedicineItem) => {
+    onDeleteMedicine(medicine.id);
+    toast.success(`"${medicine.name}" deleted`, {
+      action: { label: 'Undo', onClick: () => onRestoreMedicine(medicine) },
+    });
+  };
+
   return (
-    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Manage Medicines</h2>
         <p className="text-sm sm:text-base text-slate-600">Add, reorder, and manage your medications and supplements</p>
       </div>
 
-      {/* Form for adding new medicines */}
       <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">Add New Medicine/Supplement</h3>
         <form onSubmit={handleAdd} className="space-y-3 sm:space-y-4">
           <div>
-            <label
-              htmlFor="new-medicine"
-              className="block text-sm font-medium text-slate-700 mb-2"
-            >
+            <label htmlFor="new-medicine" className="block text-sm font-medium text-slate-700 mb-2">
               Medicine Name
             </label>
             <Input
@@ -216,7 +174,6 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
         </form>
       </div>
 
-      {/* Section for displaying and reordering existing medicines */}
       <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
           <h3 className="text-base sm:text-lg font-semibold text-slate-800">
@@ -235,25 +192,22 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
             <p className="text-slate-400 text-xs sm:text-sm">Add your first medicine above to get started</p>
           </div>
         ) : (
-          // DndContext provides the overall drag and drop environment
           <DndContext
-            sensors={sensors} // Pass configured sensors
-            collisionDetection={closestCenter} // Strategy for detecting collisions between draggable and droppable items
+            sensors={sensors}
+            collisionDetection={closestCenter}
             onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd} // Callback fired when a drag operation ends
+            onDragEnd={handleDragEnd}
           >
-            {/* SortableContext manages the collection of sortable items */}
             <SortableContext
-              items={medicines.map((med) => med.id)} // Array of unique IDs for all sortable items
-              strategy={verticalListSortingStrategy} // Defines how items are sorted visually in a vertical list
+              items={medicines.map((med) => med.id)}
+              strategy={verticalListSortingStrategy}
             >
               <ul className="space-y-3">
                 {medicines.map((med) => (
-                  // Each sortable item must be wrapped in an element with a unique key
                   <li key={med.id}>
                     <SortableMedicineItem
                       medicine={med}
-                      setMedicineToDelete={setMedicineToDelete}
+                      onDelete={handleDelete}
                     />
                   </li>
                 ))}
@@ -263,47 +217,13 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
               {activeMedicine ? (
                 <SortableMedicineItem
                   medicine={activeMedicine}
-                  setMedicineToDelete={setMedicineToDelete}
+                  onDelete={handleDelete}
                 />
               ) : null}
             </DragOverlay>
           </DndContext>
         )}
       </div>
-
-      {/* Confirmation dialog for deleting a medicine */}
-      <Dialog
-        open={!!medicineToDelete}
-        onOpenChange={(open) => !open && setMedicineToDelete(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete{" "}
-              <strong>{medicineToDelete?.name}</strong>? This will not remove
-              past intake records but will remove it from the list of available
-              medicines.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setMedicineToDelete(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (medicineToDelete) {
-                  onDeleteMedicine(medicineToDelete.id);
-                  setMedicineToDelete(null); // Close the dialog after deletion
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -75,8 +75,12 @@ export const addMedicineItem = (medicines: MedicineItem[], name: string): Medici
 export const deleteMedicineItem = (medicines: MedicineItem[], id: string): MedicineItem[] => {
   const updatedMedicines = medicines.filter(med => med.id !== id);
   saveMedicines(updatedMedicines);
-  // Optionally, also remove intake records associated with this medicine
-  // For now, we'll keep them with the stored medicineName
+  return updatedMedicines;
+};
+
+export const restoreMedicineItem = (medicines: MedicineItem[], medicine: MedicineItem): MedicineItem[] => {
+  const updatedMedicines = [...medicines, medicine];
+  saveMedicines(updatedMedicines);
   return updatedMedicines;
 };
 
@@ -101,6 +105,12 @@ export const addIntakeRecordItem = (
 
 export const deleteIntakeRecordItem = (intakeRecords: IntakeRecord[], id: string): IntakeRecord[] => {
   const updatedRecords = intakeRecords.filter(record => record.id !== id);
+  saveIntakeRecords(updatedRecords);
+  return updatedRecords;
+};
+
+export const restoreIntakeRecord = (intakeRecords: IntakeRecord[], record: IntakeRecord): IntakeRecord[] => {
+  const updatedRecords = [...intakeRecords, record];
   saveIntakeRecords(updatedRecords);
   return updatedRecords;
 };

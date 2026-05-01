@@ -14,7 +14,7 @@ interface RecordViewProps {
     medicineId: string,
     medicineName: string,
     timestamp: number,
-    details?: string
+    details?: string,
   ) => void;
   onNavigateToManage: () => void;
 }
@@ -39,10 +39,10 @@ const RecordView: React.FC<RecordViewProps> = ({
 }) => {
   const [selectedMedicineId, setSelectedMedicineId] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(
-    formatDateForInput(new Date())
+    formatDateForInput(new Date()),
   );
   const [selectedTime, setSelectedTime] = useState<string>(
-    formatTimeForInput(new Date())
+    formatTimeForInput(new Date()),
   );
   const [details, setDetails] = useState<string>("");
 
@@ -75,7 +75,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         month - 1,
         day,
         hours,
-        minutes
+        minutes,
       ).getTime();
 
       if (isNaN(timestamp)) {
@@ -83,7 +83,12 @@ const RecordView: React.FC<RecordViewProps> = ({
         return;
       }
 
-      onRecordIntake(selectedMedicine.id, selectedMedicine.name, timestamp, details);
+      onRecordIntake(
+        selectedMedicine.id,
+        selectedMedicine.name,
+        timestamp,
+        details,
+      );
       toast.success("Intake recorded successfully!");
 
       setTimeout(() => {
@@ -115,11 +120,13 @@ const RecordView: React.FC<RecordViewProps> = ({
     );
   }
 
-return (
-    <div className="flex flex-col h-full overflow-y-auto">
+  return (
+    <div className="flex flex-col flex-1 overflow-y-auto">
       <div className="px-4 pt-3 flex-shrink-0">
         <h2 className="text-lg font-bold text-slate-800">Record Intake</h2>
-        <p className="text-xs text-slate-600">Track your medicine and supplement intake</p>
+        <p className="text-xs text-slate-600">
+          Track your medicine and supplement intake
+        </p>
 
         <div className="mt-4 bg-white rounded-lg shadow-sm border border-slate-200 p-3">
           <Label className="block text-sm font-semibold text-slate-800 mb-2">
@@ -132,16 +139,24 @@ return (
           >
             {medicines.map((med) => (
               <div key={med.id} className="flex items-center space-x-2">
-                <RadioGroupItem value={med.id} id={`med-${med.id}`} className="sr-only" />
+                <RadioGroupItem
+                  value={med.id}
+                  id={`med-${med.id}`}
+                  className="sr-only"
+                />
                 <Label
                   htmlFor={`med-${med.id}`}
                   className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded cursor-pointer border text-sm
-                              ${selectedMedicineId === med.id
-                                ? "bg-sky-50 border-sky-400 text-sky-800"
-                                : "bg-slate-50 border-slate-200 text-slate-700"}`}
+                              ${
+                                selectedMedicineId === med.id
+                                  ? "bg-sky-50 border-sky-400 text-sky-800"
+                                  : "bg-slate-50 border-slate-200 text-slate-700"
+                              }`}
                 >
                   <span className="font-medium">{med.name}</span>
-                  {selectedMedicineId === med.id && <CheckIcon className="w-4 h-4 text-sky-600" />}
+                  {selectedMedicineId === med.id && (
+                    <CheckIcon className="w-4 h-4 text-sky-600" />
+                  )}
                 </Label>
               </div>
             ))}

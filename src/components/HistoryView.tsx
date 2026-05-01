@@ -4,19 +4,13 @@ import type { IntakeRecord } from "../types";
 import Calendar from "./Calendar"; // Use the refactored Calendar component
 import { Button } from "./ui/button"; // Import Shadcn Button
 import { Card } from "./ui/card"; // Import Shadcn Card
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog"; // Import Shadcn Dialog components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"; // Import Shadcn Tabs
+import { toast } from "sonner";
 
 interface HistoryViewProps {
   records: IntakeRecord[];
   onDeleteRecord: (id: string) => void;
+  onRestoreRecord: (record: IntakeRecord) => void;
 }
 
 type ViewMode = "list" | "calendar";
@@ -24,10 +18,8 @@ type ViewMode = "list" | "calendar";
 const HistoryView: React.FC<HistoryViewProps> = ({
   records,
   onDeleteRecord,
+  onRestoreRecord,
 }) => {
-  const [recordToDelete, setRecordToDelete] = useState<IntakeRecord | null>(
-    null
-  );
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(
@@ -144,7 +136,12 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setRecordToDelete(record)} 
+                    onClick={() => {
+                      onDeleteRecord(record.id);
+                      toast.success(`"${record.medicineName}" deleted`, {
+                        action: { label: 'Undo', onClick: () => onRestoreRecord(record) },
+                      });
+                    }}
                     className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-2 sm:ml-4 shrink-0"
                     aria-label={`Delete record for ${record.medicineName}`}
                   >
@@ -209,7 +206,13 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setRecordToDelete(record)}
+                        onClick={() => {
+                          const recordCopy = { ...record };
+                          onDeleteRecord(record.id);
+                          toast.success(`"${record.medicineName}" deleted`, {
+                            action: { label: 'Undo', onClick: () => onRestoreRecord(recordCopy) },
+                          });
+                        }}
                         className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-4 shrink-0"
                         aria-label={`Delete record for ${record.medicineName}`}
                       >
@@ -260,42 +263,6 @@ const HistoryView: React.FC<HistoryViewProps> = ({
           {renderCalendarView()}
         </TabsContent>
       </Tabs>
-
-      {/* The Dialog component can remain outside the Tabs component */}
-      <Dialog
-        open={!!recordToDelete}
-        onOpenChange={(open) => !open && setRecordToDelete(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this intake record for{" "}
-              <strong>{recordToDelete?.medicineName}</strong> taken at{" "}
-              {recordToDelete && formatTime(recordToDelete.timestamp)} on{" "}
-              {recordToDelete &&
-                new Date(recordToDelete.timestamp).toLocaleDateString()}
-              ?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRecordToDelete(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => {
-                if (recordToDelete) {
-                  onDeleteRecord(recordToDelete.id);
-                  setRecordToDelete(null);
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

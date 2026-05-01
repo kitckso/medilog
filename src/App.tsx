@@ -53,6 +53,14 @@ const App: React.FC = () => {
     setIntakeRecords(prevRecords => storageService.deleteIntakeRecordItem(prevRecords, id));
   }, []);
 
+  const handleRestoreRecord = useCallback((record: IntakeRecord) => {
+    setIntakeRecords(prevRecords => storageService.restoreIntakeRecord(prevRecords, record));
+  }, []);
+
+  const handleRestoreMedicine = useCallback((medicine: MedicineItem) => {
+    setMedicines(prevMedicines => storageService.restoreMedicineItem(prevMedicines, medicine));
+  }, []);
+
   // Handler functions for SettingsView
   const handleExportData = useCallback(() => {
     storageService.exportData();
@@ -65,10 +73,6 @@ const App: React.FC = () => {
       toast.info('No file selected.');
       return;
     }
-    if (!confirm('Importing data will overwrite existing data. Are you sure you want to proceed?')) {
-      event.target.value = ''; // Reset file input
-      return;
-    }
     const result = await storageService.importData(file);
     if (result.success && result.medicines && result.intakeRecords) {
       setMedicines(result.medicines);
@@ -77,7 +81,6 @@ const App: React.FC = () => {
     } else {
       toast.error(`Import failed: ${result.error}`);
     }
-    // Reset file input value to allow importing the same file again if needed
     event.target.value = '';
   }, []);
 
@@ -96,9 +99,9 @@ const App: React.FC = () => {
       case 'record':
         return <RecordView medicines={medicines} onRecordIntake={handleRecordIntake} onNavigateToManage={() => setCurrentView('manage')} />;
       case 'history':
-        return <HistoryView records={intakeRecords} onDeleteRecord={handleDeleteRecord} />;
+        return <HistoryView records={intakeRecords} onDeleteRecord={handleDeleteRecord} onRestoreRecord={handleRestoreRecord} />;
       case 'manage':
-        return <ManageMedicinesView medicines={medicines} onAddMedicine={handleAddMedicine} onDeleteMedicine={handleDeleteMedicine} onReorderMedicines={handleReorderMedicines}/>;
+        return <ManageMedicinesView medicines={medicines} onAddMedicine={handleAddMedicine} onDeleteMedicine={handleDeleteMedicine} onReorderMedicines={handleReorderMedicines} onRestoreMedicine={handleRestoreMedicine} />;
       case 'settings': // Add settings case
         return (
           <SettingsView
