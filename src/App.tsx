@@ -113,9 +113,9 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col h-screen bg-slate-50">
       <Header />
-      <main className="flex-grow pt-4 pb-20 overflow-y-auto">
+      <main className="flex flex-col flex-1 min-h-0 pb-20">
         {renderView()}
       </main>
       <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
