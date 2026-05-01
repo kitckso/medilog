@@ -1,8 +1,8 @@
 // components/Calendar.tsx
-import React from 'react';
-import { format } from 'date-fns';
-import { Calendar as ShadcnCalendar } from './ui/calendar'; // Renamed to avoid conflict
-import { cn } from '@/lib/utils'; // Utility for merging class names
+import React from "react";
+import { format } from "date-fns";
+import { Calendar as ShadcnCalendar } from "./ui/calendar"; // Renamed to avoid conflict
+import { cn } from "@/lib/utils"; // Utility for merging class names
 
 interface CalendarProps {
   currentMonth: Date;
@@ -22,13 +22,13 @@ const Calendar: React.FC<CalendarProps> = ({
   // Convert highlightedDays strings to Date objects for react-day-picker modifiers
   const modifiers = {
     highlighted: (date: Date) => {
-      const dateString = format(date, 'yyyy-MM-dd');
+      const dateString = format(date, "yyyy-MM-dd");
       return highlightedDays.has(dateString);
     },
   };
 
   const modifiersClassNames = {
-    highlighted: 'bg-green-100 text-green-700 font-semibold relative',
+    highlighted: "bg-green-100 text-green-700 font-semibold relative",
   };
 
   return (
@@ -49,9 +49,10 @@ const Calendar: React.FC<CalendarProps> = ({
             "data-[highlighted]:hover:bg-green-200",
             "data-[state=selected]:bg-sky-500 data-[state=selected]:text-white data-[state=selected]:font-semibold",
             "data-[state=selected]:hover:bg-sky-500 data-[state=selected]:hover:text-white",
-            "data-[today]:bg-sky-100 data-[today]:text-sky-700 data-[today]:font-bold data-[today]:hover:bg-sky-200"
+            "data-[today]:bg-sky-100 data-[today]:text-sky-700 data-[today]:font-bold data-[today]:hover:bg-sky-200",
           ),
-          day_selected: "bg-sky-500 text-white hover:bg-sky-500 hover:text-white focus:bg-sky-500 focus:text-white",
+          day_selected:
+            "bg-sky-500 text-white hover:bg-sky-500 hover:text-white focus:bg-sky-500 focus:text-white",
           day_today: "bg-sky-100 text-sky-700 font-bold hover:bg-sky-200",
           day_outside: "text-muted-foreground opacity-50",
           day_disabled: "text-muted-foreground opacity-50",
@@ -68,7 +69,7 @@ const Calendar: React.FC<CalendarProps> = ({
         }}
       />
       {/* Add the small green dot for highlighted days if not selected */}
-      {selectedDate && highlightedDays.has(format(selectedDate, 'yyyy-MM-dd')) && (
+      {selectedDate && highlightedDays.has(format(selectedDate, "yyyy-MM-dd")) && (
         <style>{`
           .rdp-day_selected.bg-sky-500::after {
             content: '';

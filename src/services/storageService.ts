@@ -1,11 +1,11 @@
-import type { IntakeRecord, MedicineItem } from '../types';
+import type { IntakeRecord, MedicineItem } from "../types";
 
-const MEDICINES_KEY = 'mediLog_medicines';
-const INTAKE_RECORDS_KEY = 'mediLog_intakeRecords';
+const MEDICINES_KEY = "mediLog_medicines";
+const INTAKE_RECORDS_KEY = "mediLog_intakeRecords";
 
 const getDefaultMedicines = (): MedicineItem[] => [
-  { id: 'default-1', name: 'Vitamin C' },
-  { id: 'default-2', name: 'Vitamin D' },
+  { id: "default-1", name: "Vitamin C" },
+  { id: "default-2", name: "Vitamin D" },
 ];
 
 export const getMedicines = (): MedicineItem[] => {
@@ -59,7 +59,7 @@ export const addMedicineItem = (medicines: MedicineItem[], name: string): Medici
     alert("Medicine name cannot be empty.");
     return medicines;
   }
-  if (medicines.some(med => med.name.toLowerCase() === name.trim().toLowerCase())) {
+  if (medicines.some((med) => med.name.toLowerCase() === name.trim().toLowerCase())) {
     alert("Medicine with this name already exists.");
     return medicines;
   }
@@ -73,12 +73,15 @@ export const addMedicineItem = (medicines: MedicineItem[], name: string): Medici
 };
 
 export const deleteMedicineItem = (medicines: MedicineItem[], id: string): MedicineItem[] => {
-  const updatedMedicines = medicines.filter(med => med.id !== id);
+  const updatedMedicines = medicines.filter((med) => med.id !== id);
   saveMedicines(updatedMedicines);
   return updatedMedicines;
 };
 
-export const restoreMedicineItem = (medicines: MedicineItem[], medicine: MedicineItem): MedicineItem[] => {
+export const restoreMedicineItem = (
+  medicines: MedicineItem[],
+  medicine: MedicineItem,
+): MedicineItem[] => {
   const updatedMedicines = [...medicines, medicine];
   saveMedicines(updatedMedicines);
   return updatedMedicines;
@@ -89,7 +92,7 @@ export const addIntakeRecordItem = (
   medicineId: string,
   medicineName: string,
   timestamp: number, // Accept custom timestamp
-  details?: string // Optional details parameter
+  details?: string, // Optional details parameter
 ): IntakeRecord[] => {
   const newRecord: IntakeRecord = {
     id: Date.now().toString() + Math.random().toString(36).substring(2, 9), // Record ID is still unique now
@@ -103,13 +106,19 @@ export const addIntakeRecordItem = (
   return updatedRecords;
 };
 
-export const deleteIntakeRecordItem = (intakeRecords: IntakeRecord[], id: string): IntakeRecord[] => {
-  const updatedRecords = intakeRecords.filter(record => record.id !== id);
+export const deleteIntakeRecordItem = (
+  intakeRecords: IntakeRecord[],
+  id: string,
+): IntakeRecord[] => {
+  const updatedRecords = intakeRecords.filter((record) => record.id !== id);
   saveIntakeRecords(updatedRecords);
   return updatedRecords;
 };
 
-export const restoreIntakeRecord = (intakeRecords: IntakeRecord[], record: IntakeRecord): IntakeRecord[] => {
+export const restoreIntakeRecord = (
+  intakeRecords: IntakeRecord[],
+  record: IntakeRecord,
+): IntakeRecord[] => {
   const updatedRecords = [...intakeRecords, record];
   saveIntakeRecords(updatedRecords);
   return updatedRecords;
@@ -120,18 +129,25 @@ export const exportData = (): void => {
   const intakeRecords = getIntakeRecords();
   const data = { medicines, intakeRecords };
   const jsonString = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonString], { type: 'application/json' });
+  const blob = new Blob([jsonString], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
-  a.download = 'medilog_data.json';
+  a.download = "medilog_data.json";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 };
 
-export const importData = async (file: File): Promise<{ success: boolean; medicines?: MedicineItem[]; intakeRecords?: IntakeRecord[]; error?: string }> => {
+export const importData = async (
+  file: File,
+): Promise<{
+  success: boolean;
+  medicines?: MedicineItem[];
+  intakeRecords?: IntakeRecord[];
+  error?: string;
+}> => {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -139,12 +155,12 @@ export const importData = async (file: File): Promise<{ success: boolean; medici
         const jsonString = event.target?.result as string;
         const data = JSON.parse(jsonString);
 
-        if (!data || typeof data !== 'object') {
-          throw new Error('Invalid file format: Not a JSON object.');
+        if (!data || typeof data !== "object") {
+          throw new Error("Invalid file format: Not a JSON object.");
         }
 
         if (!Array.isArray(data.medicines) || !Array.isArray(data.intakeRecords)) {
-          throw new Error('Invalid data structure: medicines or intakeRecords are not arrays.');
+          throw new Error("Invalid data structure: medicines or intakeRecords are not arrays.");
         }
 
         // Further validation could be added here to check item structures
@@ -156,12 +172,15 @@ export const importData = async (file: File): Promise<{ success: boolean; medici
         resolve({ success: true, medicines, intakeRecords });
       } catch (e: any) {
         console.error("Error importing data:", e);
-        resolve({ success: false, error: e.message || 'Failed to parse or validate the imported file.' });
+        resolve({
+          success: false,
+          error: e.message || "Failed to parse or validate the imported file.",
+        });
       }
     };
     reader.onerror = (error) => {
       console.error("FileReader error:", error);
-      resolve({ success: false, error: 'Failed to read the file.' });
+      resolve({ success: false, error: "Failed to read the file." });
     };
     reader.readAsText(file);
   });

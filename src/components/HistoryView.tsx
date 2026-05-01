@@ -15,16 +15,10 @@ interface HistoryViewProps {
 
 type ViewMode = "list" | "calendar";
 
-const HistoryView: React.FC<HistoryViewProps> = ({
-  records,
-  onDeleteRecord,
-  onRestoreRecord,
-}) => {
+const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRestoreRecord }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [calendarMonth, setCalendarMonth] = useState(new Date());
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(
-    null
-  );
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(null);
 
   const sortedRecords = useMemo(() => {
     return [...records].sort((a, b) => b.timestamp - a.timestamp);
@@ -91,7 +85,9 @@ const HistoryView: React.FC<HistoryViewProps> = ({
             <TrashIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
           </div>
           <p className="text-slate-500 text-base sm:text-lg">No intake history yet</p>
-          <p className="text-slate-400 text-xs sm:text-sm">Start recording your medications to see them here</p>
+          <p className="text-slate-400 text-xs sm:text-sm">
+            Start recording your medications to see them here
+          </p>
         </div>
       );
     }
@@ -139,7 +135,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                     onClick={() => {
                       onDeleteRecord(record.id);
                       toast.success(`"${record.medicineName}" deleted`, {
-                        action: { label: 'Undo', onClick: () => onRestoreRecord(record) },
+                        action: { label: "Undo", onClick: () => onRestoreRecord(record) },
                       });
                     }}
                     className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-2 sm:ml-4 shrink-0"
@@ -210,7 +206,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                           const recordCopy = { ...record };
                           onDeleteRecord(record.id);
                           toast.success(`"${record.medicineName}" deleted`, {
-                            action: { label: 'Undo', onClick: () => onRestoreRecord(recordCopy) },
+                            action: { label: "Undo", onClick: () => onRestoreRecord(recordCopy) },
                           });
                         }}
                         className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-4 shrink-0"
@@ -223,9 +219,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-slate-500 text-center py-4">
-                No records for this day.
-              </p>
+              <p className="text-slate-500 text-center py-4">No records for this day.</p>
             )}
           </div>
         )}
@@ -237,7 +231,9 @@ const HistoryView: React.FC<HistoryViewProps> = ({
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Intake History</h2>
-        <p className="text-sm sm:text-base text-slate-600">View and manage your medication records</p>
+        <p className="text-sm sm:text-base text-slate-600">
+          View and manage your medication records
+        </p>
       </div>
 
       {/* The Tabs component must wrap both the TabsList and TabsContent */}
@@ -247,10 +243,16 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         className="w-full"
       >
         <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg sm:rounded-xl mb-4 sm:mb-6">
-          <TabsTrigger value="list" className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base">
+          <TabsTrigger
+            value="list"
+            className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base"
+          >
             List View
           </TabsTrigger>
-          <TabsTrigger value="calendar" className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base">
+          <TabsTrigger
+            value="calendar"
+            className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base"
+          >
             Calendar View
           </TabsTrigger>
         </TabsList>

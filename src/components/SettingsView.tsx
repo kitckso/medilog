@@ -1,7 +1,7 @@
 // src/components/SettingsView.tsx
-import { Download, Trash2, Upload } from 'lucide-react';
-import React, { useRef, useState } from 'react';
-import packageJson from '../../package.json';
+import { Download, Trash2, Upload } from "lucide-react";
+import React, { useRef, useState } from "react";
+import packageJson from "../../package.json";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,10 +11,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './ui/alert-dialog';
-import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Separator } from './ui/separator';
+} from "./ui/alert-dialog";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Separator } from "./ui/separator";
 
 interface SettingsViewProps {
   onExportData: () => void;
@@ -39,41 +39,53 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
   const handleImportCancel = () => {
     setImportDialogOpen(false);
     if (importInputRef.current) {
-      importInputRef.current.value = '';
+      importInputRef.current.value = "";
     }
   };
 
   const handleClearDataConfirm = () => {
     onClearData();
     setClearDataDialogOpen(false);
-  }
+  };
 
   return (
     <>
       <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl mx-auto">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Settings</h2>
-          <p className="text-sm sm:text-base text-slate-600">Manage your data and application preferences</p>
+          <p className="text-sm sm:text-base text-slate-600">
+            Manage your data and application preferences
+          </p>
         </div>
 
         <Card className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200">
           <CardHeader className="pb-3 sm:pb-4">
-            <CardTitle className="text-base sm:text-lg font-semibold text-slate-800">Data Management</CardTitle>
-            <CardDescription className="text-sm sm:text-base text-slate-600">Export, import, or clear your application data</CardDescription>
+            <CardTitle className="text-base sm:text-lg font-semibold text-slate-800">
+              Data Management
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base text-slate-600">
+              Export, import, or clear your application data
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Export Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-slate-50 rounded-lg border border-slate-200">
               <div className="flex items-start space-x-3">
-                 <div className="bg-blue-100 p-2 rounded-lg shrink-0">
-                   <Download className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                 </div>
+                <div className="bg-blue-100 p-2 rounded-lg shrink-0">
+                  <Download className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-semibold text-slate-800">Export Data</h3>
-                  <p className="text-xs sm:text-sm text-slate-600">Download all your data as a single JSON file</p>
+                  <p className="text-xs sm:text-sm text-slate-600">
+                    Download all your data as a single JSON file
+                  </p>
                 </div>
               </div>
-              <Button onClick={onExportData} variant="outline" className="bg-white hover:bg-blue-50 border-blue-200 text-blue-700 hover:text-blue-800 w-full sm:w-auto">
+              <Button
+                onClick={onExportData}
+                variant="outline"
+                className="bg-white hover:bg-blue-50 border-blue-200 text-blue-700 hover:text-blue-800 w-full sm:w-auto"
+              >
                 <Download className="w-4 h-4 mr-2" />
                 <span className="text-sm sm:text-base">Export</span>
               </Button>
@@ -83,18 +95,25 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
 
             {/* Import Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-slate-50 rounded-lg border border-slate-200">
-               <div className="flex items-start space-x-3">
-                 <div className="bg-green-100 p-2 rounded-lg shrink-0">
-                   <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                 </div>
+              <div className="flex items-start space-x-3">
+                <div className="bg-green-100 p-2 rounded-lg shrink-0">
+                  <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-semibold text-slate-800">Import Data</h3>
                   <p className="text-xs sm:text-sm text-slate-600">
-                    Import from a JSON file. <span className="font-semibold text-amber-600">This will overwrite current data.</span>
+                    Import from a JSON file.{" "}
+                    <span className="font-semibold text-amber-600">
+                      This will overwrite current data.
+                    </span>
                   </p>
                 </div>
               </div>
-              <Button onClick={handleImportClick} variant="outline" className="bg-white hover:bg-green-50 border-green-200 text-green-700 hover:text-green-800 w-full sm:w-auto">
+              <Button
+                onClick={handleImportClick}
+                variant="outline"
+                className="bg-white hover:bg-green-50 border-green-200 text-green-700 hover:text-green-800 w-full sm:w-auto"
+              >
                 <Upload className="w-4 h-4 mr-2" />
                 <span className="text-sm sm:text-base">Import</span>
               </Button>
@@ -113,17 +132,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
             {/* Clear Data Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-red-50 rounded-lg border border-red-200">
               <div className="flex items-start space-x-3">
-                 <div className="bg-red-100 p-2 rounded-lg shrink-0">
-                   <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
-                 </div>
-                 <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-slate-800">Clear All Data</h3>
+                <div className="bg-red-100 p-2 rounded-lg shrink-0">
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-semibold text-slate-800">
+                    Clear All Data
+                  </h3>
                   <p className="text-xs sm:text-sm text-red-600">
-                    <span className="font-semibold">This action cannot be undone.</span> All records will be permanently deleted.
+                    <span className="font-semibold">This action cannot be undone.</span> All records
+                    will be permanently deleted.
                   </p>
                 </div>
               </div>
-              <Button onClick={() => setClearDataDialogOpen(true)} variant="destructive" className="bg-red-600 hover:bg-red-700 w-full sm:w-auto">
+              <Button
+                onClick={() => setClearDataDialogOpen(true)}
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+              >
                 <Trash2 className="w-4 h-4 mr-2" />
                 <span className="text-sm sm:text-base">Clear Data</span>
               </Button>
@@ -132,15 +158,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
         </Card>
 
         <div className="flex items-center justify-center gap-3 px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 rounded-lg sm:rounded-xl shadow-sm border border-slate-200">
-            <div className="bg-gradient-to-br from-sky-400 to-sky-600 w-7 h-7 rounded-md flex items-center justify-center">
-              <span className="text-sm font-bold text-white">{packageJson.name.charAt(0).toUpperCase()}</span>
-            </div>
-            <span className="text-sm font-semibold text-slate-700 capitalize">{packageJson.name}</span>
-            <span className="text-xs text-slate-400">·</span>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 text-xs font-medium">
-              v{packageJson.version}
+          <div className="bg-gradient-to-br from-sky-400 to-sky-600 w-7 h-7 rounded-md flex items-center justify-center">
+            <span className="text-sm font-bold text-white">
+              {packageJson.name.charAt(0).toUpperCase()}
             </span>
           </div>
+          <span className="text-sm font-semibold text-slate-700 capitalize">
+            {packageJson.name}
+          </span>
+          <span className="text-xs text-slate-400">·</span>
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 text-xs font-medium">
+            v{packageJson.version}
+          </span>
+        </div>
       </div>
 
       {/* Import Confirmation Dialog */}
@@ -149,7 +179,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
           <AlertDialogHeader>
             <AlertDialogTitle>Import Data?</AlertDialogTitle>
             <AlertDialogDescription>
-              Importing data will overwrite all existing medicines and intake records. This action cannot be undone.
+              Importing data will overwrite all existing medicines and intake records. This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -165,12 +196,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete all your medicines and intake history from this device.
+              This action cannot be undone. This will permanently delete all your medicines and
+              intake history from this device.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClearDataConfirm} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction
+              onClick={handleClearDataConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Yes, delete everything
             </AlertDialogAction>
           </AlertDialogFooter>

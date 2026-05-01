@@ -33,18 +33,10 @@ interface SortableMedicineItemProps {
   onDelete: (medicine: MedicineItem) => void;
 }
 
-const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
-  medicine,
-  onDelete,
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: medicine.id });
+const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({ medicine, onDelete }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: medicine.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -67,11 +59,13 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
         role="button"
         tabIndex={0}
         aria-label="Drag to reorder medicine"
-        style={{ touchAction: 'none' }}
+        style={{ touchAction: "none" }}
       >
         <GripVerticalIcon className="w-4 h-4 sm:w-5 sm:h-5" />
       </div>
-      <span className="flex-grow text-slate-800 ml-2 sm:ml-3 font-medium text-sm sm:text-base">{medicine.name}</span>
+      <span className="flex-grow text-slate-800 ml-2 sm:ml-3 font-medium text-sm sm:text-base">
+        {medicine.name}
+      </span>
       <Button
         variant="ghost"
         size="icon"
@@ -106,7 +100,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   const handleDragStart = (event: DragEndEvent) => {
@@ -138,7 +132,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   const handleDelete = (medicine: MedicineItem) => {
     onDeleteMedicine(medicine.id);
     toast.success(`"${medicine.name}" deleted`, {
-      action: { label: 'Undo', onClick: () => onRestoreMedicine(medicine) },
+      action: { label: "Undo", onClick: () => onRestoreMedicine(medicine) },
     });
   };
 
@@ -146,11 +140,15 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
     <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Manage Medicines</h2>
-        <p className="text-sm sm:text-base text-slate-600">Add, reorder, and manage your medications and supplements</p>
+        <p className="text-sm sm:text-base text-slate-600">
+          Add, reorder, and manage your medications and supplements
+        </p>
       </div>
 
       <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">Add New Medicine/Supplement</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">
+          Add New Medicine/Supplement
+        </h3>
         <form onSubmit={handleAdd} className="space-y-3 sm:space-y-4">
           <div>
             <label htmlFor="new-medicine" className="block text-sm font-medium text-slate-700 mb-2">
@@ -189,7 +187,9 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
               <PlusIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
             </div>
             <p className="text-slate-500 text-base sm:text-lg">No medicines added yet</p>
-            <p className="text-slate-400 text-xs sm:text-sm">Add your first medicine above to get started</p>
+            <p className="text-slate-400 text-xs sm:text-sm">
+              Add your first medicine above to get started
+            </p>
           </div>
         ) : (
           <DndContext
@@ -205,20 +205,14 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
               <ul className="space-y-3">
                 {medicines.map((med) => (
                   <li key={med.id}>
-                    <SortableMedicineItem
-                      medicine={med}
-                      onDelete={handleDelete}
-                    />
+                    <SortableMedicineItem medicine={med} onDelete={handleDelete} />
                   </li>
                 ))}
               </ul>
             </SortableContext>
             <DragOverlay>
               {activeMedicine ? (
-                <SortableMedicineItem
-                  medicine={activeMedicine}
-                  onDelete={handleDelete}
-                />
+                <SortableMedicineItem medicine={activeMedicine} onDelete={handleDelete} />
               ) : null}
             </DragOverlay>
           </DndContext>

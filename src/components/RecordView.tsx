@@ -38,12 +38,8 @@ const RecordView: React.FC<RecordViewProps> = ({
   onNavigateToManage,
 }) => {
   const [selectedMedicineId, setSelectedMedicineId] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(
-    formatDateForInput(new Date()),
-  );
-  const [selectedTime, setSelectedTime] = useState<string>(
-    formatTimeForInput(new Date()),
-  );
+  const [selectedDate, setSelectedDate] = useState<string>(formatDateForInput(new Date()));
+  const [selectedTime, setSelectedTime] = useState<string>(formatTimeForInput(new Date()));
   const [details, setDetails] = useState<string>("");
 
   useEffect(() => {
@@ -70,25 +66,14 @@ const RecordView: React.FC<RecordViewProps> = ({
     if (selectedMedicine) {
       const [year, month, day] = selectedDate.split("-").map(Number);
       const [hours, minutes] = selectedTime.split(":").map(Number);
-      const timestamp = new Date(
-        year,
-        month - 1,
-        day,
-        hours,
-        minutes,
-      ).getTime();
+      const timestamp = new Date(year, month - 1, day, hours, minutes).getTime();
 
       if (isNaN(timestamp)) {
         toast.error("Invalid date or time selected.");
         return;
       }
 
-      onRecordIntake(
-        selectedMedicine.id,
-        selectedMedicine.name,
-        timestamp,
-        details,
-      );
+      onRecordIntake(selectedMedicine.id, selectedMedicine.name, timestamp, details);
       toast.success("Intake recorded successfully!");
 
       setTimeout(() => {
@@ -107,9 +92,7 @@ const RecordView: React.FC<RecordViewProps> = ({
   if (medicines.length === 0) {
     return (
       <div className="p-4 text-center text-slate-600">
-        <p className="mb-4">
-          No medicines defined yet. Please add some medicines first.
-        </p>
+        <p className="mb-4">No medicines defined yet. Please add some medicines first.</p>
         <Button
           onClick={onNavigateToManage}
           className="bg-sky-500 hover:bg-sky-600 text-white mx-auto"
@@ -124,14 +107,10 @@ const RecordView: React.FC<RecordViewProps> = ({
     <div className="flex flex-col flex-1 overflow-y-auto">
       <div className="px-4 pt-3 flex-shrink-0">
         <h2 className="text-lg font-bold text-slate-800">Record Intake</h2>
-        <p className="text-xs text-slate-600">
-          Track your medicine and supplement intake
-        </p>
+        <p className="text-xs text-slate-600">Track your medicine and supplement intake</p>
 
         <div className="mt-4 bg-white rounded-lg shadow-sm border border-slate-200 p-3">
-          <Label className="block text-sm font-semibold text-slate-800 mb-2">
-            Medicine
-          </Label>
+          <Label className="block text-sm font-semibold text-slate-800 mb-2">Medicine</Label>
           <RadioGroup
             value={selectedMedicineId}
             onValueChange={setSelectedMedicineId}
@@ -139,11 +118,7 @@ const RecordView: React.FC<RecordViewProps> = ({
           >
             {medicines.map((med) => (
               <div key={med.id} className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value={med.id}
-                  id={`med-${med.id}`}
-                  className="sr-only"
-                />
+                <RadioGroupItem value={med.id} id={`med-${med.id}`} className="sr-only" />
                 <Label
                   htmlFor={`med-${med.id}`}
                   className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded cursor-pointer border text-sm
@@ -154,9 +129,7 @@ const RecordView: React.FC<RecordViewProps> = ({
                               }`}
                 >
                   <span className="font-medium">{med.name}</span>
-                  {selectedMedicineId === med.id && (
-                    <CheckIcon className="w-4 h-4 text-sky-600" />
-                  )}
+                  {selectedMedicineId === med.id && <CheckIcon className="w-4 h-4 text-sky-600" />}
                 </Label>
               </div>
             ))}
@@ -175,9 +148,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         </div>
 
         <div className="mt-4 bg-white rounded-lg shadow-sm border border-slate-200 p-3">
-          <Label className="block text-sm font-semibold text-slate-800 mb-2">
-            When
-          </Label>
+          <Label className="block text-sm font-semibold text-slate-800 mb-2">When</Label>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <Label className="block text-xs text-slate-700 mb-1">Date</Label>
