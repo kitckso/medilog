@@ -231,7 +231,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Intake History</h2>
         <p className="text-sm sm:text-base text-slate-600">View and manage your medication records</p>
