@@ -90,7 +90,7 @@ const App: React.FC = () => {
 
   const renderView = () => {
     if (isLoading) {
-        return <div className="p-4 text-center text-slate-600">Loading your data...</div>;
+        return <div className="p-4 text-center"><div className="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div><span className="text-slate-500">Loading...</span></div>;
     }
     switch (currentView) {
       case 'record':
@@ -119,7 +119,7 @@ const App: React.FC = () => {
         {renderView()}
       </main>
       <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
     </div>
   );
 };

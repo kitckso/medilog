@@ -74,7 +74,7 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({
     <Card
       ref={setNodeRef}
       style={style}
-      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-emerald-400"
+      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-sky-400"
     >
       {/* Drag handle: Attach listeners and attributes for drag functionality */}
       <div
@@ -209,7 +209,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
           </div>
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+            className="w-full bg-sky-500 hover:bg-sky-600 text-white text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Add Medicine
           </Button>

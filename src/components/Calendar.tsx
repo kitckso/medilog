@@ -77,7 +77,7 @@ const Calendar: React.FC<CalendarProps> = ({
             right: 4px;
             width: 8px;
             height: 8px;
-            background-color: hsl(var(--green-500));
+            background-color: #10b981;
             border-radius: 9999px;
           }
         `}</style>
