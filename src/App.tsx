@@ -222,10 +222,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <Header />
-      <main className="flex flex-col flex-1 min-h-0 pb-20">
-        <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">{renderView()}</div>
+      <main className="flex flex-1 flex-col overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">{renderView()}</div>
       </main>
       <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
       <Toaster position="top-center" />

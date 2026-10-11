@@ -5,6 +5,17 @@ All notable changes to MediLog will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2026-10-11
+
+### 🐛 Fixed
+
+- The bottom navigation no longer covers content. It was `position: fixed`, so it floated over the page and clipped the last row of every scrollable view; it is now a sibling in the app's flex column and takes its own space
+- The scrollbar is confined to the content area instead of running the full window height past the header and navigation bar. The root is now a fixed `100dvh` viewport with `overflow-hidden`, and `<main>` is the scroll container
+
+### 🔧 Changed
+
+- Dropped the `pb-20` on `<main>` that previously padded content clear of the fixed navigation bar, since the bar no longer overlaps it
+
 ## [1.4.1] - 2026-10-11
 
 ### 🐛 Fixed

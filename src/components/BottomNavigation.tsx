@@ -18,7 +18,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavi
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-[0_-2px_8px_rgba(0,0,0,0.06)] border-t border-slate-200 z-50">
+    <nav className="flex-shrink-0 border-t border-slate-200 bg-card shadow-[0_-2px_8px_rgba(0,0,0,0.06)] z-50">
       <div className="mx-auto flex w-full max-w-2xl justify-around p-2">
         {navItems.map((item) => {
           const isActive = currentView === item.view;
