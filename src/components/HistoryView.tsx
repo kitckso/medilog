@@ -1,4 +1,4 @@
-import { TrashIcon } from "lucide-react";
+import { PencilIcon, TrashIcon } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import {
   filterRecordsByLocalDay,
@@ -8,10 +8,13 @@ import {
   getRecordDateKeys,
   sortRecordsByTimestampDesc,
 } from "@/lib/dateUtils";
+import { filterRecordsByQuery } from "@/lib/recordFilters";
 import type { IntakeRecord } from "../types";
 import Calendar from "./Calendar"; // Use the refactored Calendar component
+import EditRecordDialog from "./EditRecordDialog";
 import { Button } from "./ui/button"; // Import Shadcn Button
 import { Card } from "./ui/card"; // Import Shadcn Card
+import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"; // Import Shadcn Tabs
 import { toast } from "sonner";
 
@@ -19,23 +22,69 @@ interface HistoryViewProps {
   records: IntakeRecord[];
   onDeleteRecord: (id: string) => void;
   onRestoreRecord: (record: IntakeRecord) => void;
+  onUpdateRecord: (id: string, timestamp: number, details?: string) => void;
 }
 
 type ViewMode = "list" | "calendar";
 
-const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRestoreRecord }) => {
+const HistoryView: React.FC<HistoryViewProps> = ({
+  records,
+  onDeleteRecord,
+  onRestoreRecord,
+  onUpdateRecord,
+}) => {
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(null);
+  const [query, setQuery] = useState("");
+  const [editingRecord, setEditingRecord] = useState<IntakeRecord | null>(null);
 
   const sortedRecords = useMemo(() => sortRecordsByTimestampDesc(records), [records]);
 
-  const datesWithRecords = useMemo(() => getRecordDateKeys(records), [records]);
+  const filteredRecords = useMemo(
+    () => filterRecordsByQuery(sortedRecords, query),
+    [sortedRecords, query],
+  );
+
+  // The search applies to the calendar view too (highlights and day records),
+  // so the filter never silently disappears when switching tabs.
+  const datesWithRecords = useMemo(() => getRecordDateKeys(filteredRecords), [filteredRecords]);
 
   const recordsForSelectedDate = useMemo(() => {
     if (!selectedCalendarDate) return [];
-    return filterRecordsByLocalDay(sortedRecords, selectedCalendarDate);
-  }, [sortedRecords, selectedCalendarDate]);
+    return filterRecordsByLocalDay(filteredRecords, selectedCalendarDate);
+  }, [filteredRecords, selectedCalendarDate]);
+
+  const handleDelete = (record: IntakeRecord) => {
+    const recordCopy = { ...record };
+    onDeleteRecord(record.id);
+    toast.success(`"${record.medicineName}" deleted`, {
+      action: { label: "Undo", onClick: () => onRestoreRecord(recordCopy) },
+    });
+  };
+
+  const renderRecordActions = (record: IntakeRecord, sizeClasses: string) => (
+    <div className="ml-2 flex shrink-0 items-center sm:ml-4">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setEditingRecord(record)}
+        className="text-slate-400 hover:bg-sky-50 hover:text-sky-600"
+        aria-label={`Edit record for ${record.medicineName}`}
+      >
+        <PencilIcon className={sizeClasses} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => handleDelete(record)}
+        className="text-red-400 hover:bg-red-50 hover:text-red-600"
+        aria-label={`Delete record for ${record.medicineName}`}
+      >
+        <TrashIcon className={sizeClasses} />
+      </Button>
+    </div>
+  );
 
   const renderListView = () => {
     if (sortedRecords.length === 0) {
@@ -51,10 +100,20 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
         </div>
       );
     }
+
+    if (filteredRecords.length === 0) {
+      return (
+        <div className="text-center py-8 sm:py-12">
+          <p className="text-slate-500 text-base sm:text-lg">No matching records</p>
+          <p className="text-slate-400 text-xs sm:text-sm">Try a different search term</p>
+        </div>
+      );
+    }
+
     let lastDateHeader: string | null = null;
     return (
       <div className="space-y-4">
-        {sortedRecords.map((record) => {
+        {filteredRecords.map((record) => {
           const currentDateHeader = formatDateHeader(record.timestamp);
           const showDateHeader = currentDateHeader !== lastDateHeader;
           if (showDateHeader) {
@@ -89,20 +148,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
                       </div>
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      onDeleteRecord(record.id);
-                      toast.success(`"${record.medicineName}" deleted`, {
-                        action: { label: "Undo", onClick: () => onRestoreRecord(record) },
-                      });
-                    }}
-                    className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-2 sm:ml-4 shrink-0"
-                    aria-label={`Delete record for ${record.medicineName}`}
-                  >
-                    <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </Button>
+                  {renderRecordActions(record, "w-4 h-4 sm:w-5 sm:h-5")}
                 </div>
               </Card>
             </React.Fragment>
@@ -153,21 +199,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
                           </div>
                         )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          const recordCopy = { ...record };
-                          onDeleteRecord(record.id);
-                          toast.success(`"${record.medicineName}" deleted`, {
-                            action: { label: "Undo", onClick: () => onRestoreRecord(recordCopy) },
-                          });
-                        }}
-                        className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-4 shrink-0"
-                        aria-label={`Delete record for ${record.medicineName}`}
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </Button>
+                      {renderRecordActions(record, "w-5 h-5")}
                     </div>
                   </Card>
                 ))}
@@ -189,6 +221,17 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
           View and manage your medication records
         </p>
       </div>
+
+      {sortedRecords.length > 0 && (
+        <Input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by medicine or details"
+          aria-label="Search intake records"
+          className="w-full text-sm"
+        />
+      )}
 
       {/* The Tabs component must wrap both the TabsList and TabsContent */}
       <Tabs
@@ -219,6 +262,17 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
           {renderCalendarView()}
         </TabsContent>
       </Tabs>
+
+      <EditRecordDialog
+        record={editingRecord}
+        onOpenChange={(open) => {
+          if (!open) setEditingRecord(null);
+        }}
+        onSave={(id, timestamp, details) => {
+          onUpdateRecord(id, timestamp, details);
+          setEditingRecord(null);
+        }}
+      />
     </div>
   );
 };

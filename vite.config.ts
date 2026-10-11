@@ -135,8 +135,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate", // Automatically update the service worker
-      injectRegister: "auto", // Injects the service worker registration script
+      registerType: "prompt", // Let the app show a "new version" prompt instead of swapping silently
+      injectRegister: false, // Registration is handled by virtual:pwa-register/react in ReloadPrompt
       workbox: {
         // Define which files to cache. Adjust as needed.
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest}"],

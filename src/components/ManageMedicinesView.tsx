@@ -7,6 +7,7 @@ import type { MedicineItem } from "../types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { validateMedicineName } from "@/lib/validation";
 
 import {
   DndContext,
@@ -50,7 +51,7 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({ medicine, o
     <Card
       ref={setNodeRef}
       style={style}
-      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-sky-400"
+      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg border-l-4 border-l-sky-400"
     >
       <button
         type="button"
@@ -120,8 +121,9 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMedicineName.trim() === "") {
-      toast.error("Please enter a medicine name.");
+    const error = validateMedicineName(medicines, newMedicineName);
+    if (error) {
+      toast.error(error);
       return;
     }
     onAddMedicine(newMedicineName.trim());

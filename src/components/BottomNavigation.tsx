@@ -18,7 +18,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavi
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-top flex justify-around p-2 border-t border-slate-200 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)] flex justify-around p-2 border-t border-slate-200 z-50">
       {navItems.map((item) => {
         const isActive = currentView === item.view;
         const IconComponent = item.icon;

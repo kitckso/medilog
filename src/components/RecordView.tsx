@@ -1,6 +1,6 @@
 // components/RecordView.tsx
 import { CheckIcon, PlusIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { MedicineItem } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,18 +30,15 @@ const RecordView: React.FC<RecordViewProps> = ({
   const [selectedTime, setSelectedTime] = useState<string>(() => formatTimeForInput(new Date()));
   const [details, setDetails] = useState<string>("");
 
-  useEffect(() => {
-    const now = new Date();
-    setSelectedDate(toLocalDateKey(now));
-    setSelectedTime(formatTimeForInput(now));
-    // If there are medicines, pre-select the first one for convenience
-    if (medicines.length > 0 && !selectedMedicineId) {
-      setSelectedMedicineId(medicines[0].id);
-    }
-  }, [medicines, selectedMedicineId]);
+  // Pre-select the first medicine by deriving the effective selection during
+  // render (no effect needed), falling back to the first item and recovering
+  // automatically if the selected medicine is removed.
+  const activeMedicineId = medicines.some((med) => med.id === selectedMedicineId)
+    ? selectedMedicineId
+    : (medicines[0]?.id ?? "");
 
   const handleRecord = () => {
-    if (!selectedMedicineId) {
+    if (!activeMedicineId) {
       toast.error("Please select a medicine.");
       return;
     }
@@ -50,7 +47,7 @@ const RecordView: React.FC<RecordViewProps> = ({
       return;
     }
 
-    const selectedMedicine = medicines.find((m) => m.id === selectedMedicineId);
+    const selectedMedicine = medicines.find((m) => m.id === activeMedicineId);
     if (selectedMedicine) {
       const timestamp = parseLocalDateTime(selectedDate, selectedTime);
 
@@ -68,9 +65,6 @@ const RecordView: React.FC<RecordViewProps> = ({
         const now = new Date();
         setSelectedDate(toLocalDateKey(now));
         setSelectedTime(formatTimeForInput(now));
-        if (medicines.length > 0) {
-          setSelectedMedicineId(medicines[0].id);
-        }
       }, 2000);
     }
   };
@@ -98,7 +92,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         <div className="mt-4 bg-white rounded-lg shadow-sm border border-slate-200 p-3">
           <Label className="block text-sm font-semibold text-slate-800 mb-2">Medicine</Label>
           <RadioGroup
-            value={selectedMedicineId}
+            value={activeMedicineId}
             onValueChange={setSelectedMedicineId}
             className="space-y-1 max-h-48"
           >
@@ -109,18 +103,18 @@ const RecordView: React.FC<RecordViewProps> = ({
                   htmlFor={`med-${med.id}`}
                   className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded cursor-pointer border text-sm
                               ${
-                                selectedMedicineId === med.id
+                                activeMedicineId === med.id
                                   ? "bg-sky-50 border-sky-400 text-sky-800"
                                   : "bg-slate-50 border-slate-200 text-slate-700"
                               }`}
                 >
                   <span className="font-medium">{med.name}</span>
-                  {selectedMedicineId === med.id && <CheckIcon className="w-4 h-4 text-sky-600" />}
+                  {activeMedicineId === med.id && <CheckIcon className="w-4 h-4 text-sky-600" />}
                 </Label>
               </div>
             ))}
           </RadioGroup>
-          {selectedMedicineId && (
+          {activeMedicineId && (
             <div className="mt-2 pt-2 border-t border-slate-200">
               <Input
                 type="text"
@@ -163,7 +157,7 @@ const RecordView: React.FC<RecordViewProps> = ({
       <div className="px-4 pt-6 pb-4 flex-shrink-0">
         <Button
           onClick={handleRecord}
-          disabled={!selectedMedicineId || !selectedDate || !selectedTime}
+          disabled={!activeMedicineId || !selectedDate || !selectedTime}
           className="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <PlusIcon className="w-4 h-4 mr-2" /> Record Intake

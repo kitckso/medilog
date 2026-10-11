@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import BottomNavigation from "./components/BottomNavigation";
 import Header from "./components/Header";
 import HistoryView from "./components/HistoryView";
@@ -17,29 +17,61 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>("record");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Refs mirror the latest lists so event handlers can compute the next value
+  // and persist it without putting side effects inside a state updater.
+  const medicinesRef = useRef<MedicineItem[]>([]);
+  const intakeRecordsRef = useRef<IntakeRecord[]>([]);
+
   useEffect(() => {
-    setMedicines(storageService.getMedicines());
-    setIntakeRecords(storageService.getIntakeRecords());
+    const storedMedicines = storageService.getMedicines();
+    const storedRecords = storageService.getIntakeRecords();
+    medicinesRef.current = storedMedicines;
+    intakeRecordsRef.current = storedRecords;
+    setMedicines(storedMedicines);
+    setIntakeRecords(storedRecords);
     setIsLoading(false);
+  }, []);
+
+  // State + storage are updated together in one place, from the event handler.
+  const commitMedicines = useCallback((updated: MedicineItem[]) => {
+    medicinesRef.current = updated;
+    setMedicines(updated);
+    if (!storageService.saveMedicines(updated)) {
+      toast.error("Couldn't save your changes - storage may be full or unavailable.");
+    }
+  }, []);
+
+  const commitIntakeRecords = useCallback((updated: IntakeRecord[]) => {
+    intakeRecordsRef.current = updated;
+    setIntakeRecords(updated);
+    if (!storageService.saveIntakeRecords(updated)) {
+      toast.error("Couldn't save your changes - storage may be full or unavailable.");
+    }
   }, []);
 
   const handleNavigate = useCallback((view: AppView) => {
     setCurrentView(view);
   }, []);
 
-  const handleAddMedicine = useCallback((name: string) => {
-    setMedicines((prevMedicines) => storageService.addMedicineItem(prevMedicines, name));
-  }, []);
+  const handleAddMedicine = useCallback(
+    (name: string) => {
+      commitMedicines(storageService.addMedicineItem(medicinesRef.current, name));
+    },
+    [commitMedicines],
+  );
 
-  const handleDeleteMedicine = useCallback((id: string) => {
-    setMedicines((prevMedicines) => storageService.deleteMedicineItem(prevMedicines, id));
-  }, []);
+  const handleDeleteMedicine = useCallback(
+    (id: string) => {
+      commitMedicines(storageService.deleteMedicineItem(medicinesRef.current, id));
+    },
+    [commitMedicines],
+  );
 
   const handleRecordIntake = useCallback(
     (medicineId: string, medicineName: string, timestamp: number, details?: string) => {
-      setIntakeRecords((prevRecords) =>
+      commitIntakeRecords(
         storageService.addIntakeRecordItem(
-          prevRecords,
+          intakeRecordsRef.current,
           medicineId,
           medicineName,
           timestamp,
@@ -47,7 +79,7 @@ const App: React.FC = () => {
         ),
       );
     },
-    [],
+    [commitIntakeRecords],
   );
 
   /**
@@ -55,22 +87,43 @@ const App: React.FC = () => {
    * This function is passed to ManageMedicinesView and is called when a drag-and-drop reorder occurs.
    * @param newOrder The new array of MedicineItem in their reordered sequence.
    */
-  const handleReorderMedicines = useCallback((newOrder: MedicineItem[]) => {
-    setMedicines(newOrder); // Update the state with the new order
-    storageService.saveMedicines(newOrder); // Persist the new order to local storage
-  }, []);
+  const handleReorderMedicines = useCallback(
+    (newOrder: MedicineItem[]) => {
+      commitMedicines(newOrder);
+    },
+    [commitMedicines],
+  );
 
-  const handleDeleteRecord = useCallback((id: string) => {
-    setIntakeRecords((prevRecords) => storageService.deleteIntakeRecordItem(prevRecords, id));
-  }, []);
+  const handleDeleteRecord = useCallback(
+    (id: string) => {
+      commitIntakeRecords(storageService.deleteIntakeRecordItem(intakeRecordsRef.current, id));
+    },
+    [commitIntakeRecords],
+  );
 
-  const handleRestoreRecord = useCallback((record: IntakeRecord) => {
-    setIntakeRecords((prevRecords) => storageService.restoreIntakeRecord(prevRecords, record));
-  }, []);
+  const handleRestoreRecord = useCallback(
+    (record: IntakeRecord) => {
+      commitIntakeRecords(storageService.restoreIntakeRecord(intakeRecordsRef.current, record));
+    },
+    [commitIntakeRecords],
+  );
 
-  const handleRestoreMedicine = useCallback((medicine: MedicineItem) => {
-    setMedicines((prevMedicines) => storageService.restoreMedicineItem(prevMedicines, medicine));
-  }, []);
+  const handleUpdateRecord = useCallback(
+    (id: string, timestamp: number, details?: string) => {
+      commitIntakeRecords(
+        storageService.updateIntakeRecordItem(intakeRecordsRef.current, id, { timestamp, details }),
+      );
+      toast.success("Record updated");
+    },
+    [commitIntakeRecords],
+  );
+
+  const handleRestoreMedicine = useCallback(
+    (medicine: MedicineItem) => {
+      commitMedicines(storageService.restoreMedicineItem(medicinesRef.current, medicine));
+    },
+    [commitMedicines],
+  );
 
   // Handler functions for SettingsView
   const handleExportData = useCallback(() => {
@@ -78,27 +131,37 @@ const App: React.FC = () => {
     toast.success("Data exported successfully!");
   }, []);
 
-  const handleImportData = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      toast.info("No file selected.");
-      return;
-    }
-    const result = await storageService.importData(file);
-    if (result.success && result.medicines && result.intakeRecords) {
-      setMedicines(result.medicines);
-      setIntakeRecords(result.intakeRecords);
-      toast.success("Data imported successfully!");
-    } else {
-      toast.error(`Import failed: ${result.error}`);
-    }
-    event.target.value = "";
-  }, []);
+  const handleImportData = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) {
+        toast.info("No file selected.");
+        return;
+      }
+      const result = await storageService.importData(file);
+      if (result.success && result.medicines && result.intakeRecords) {
+        commitMedicines(result.medicines);
+        commitIntakeRecords(result.intakeRecords);
+        toast.success("Data imported successfully!");
+      } else {
+        toast.error(`Import failed: ${result.error}`);
+      }
+      event.target.value = "";
+    },
+    [commitMedicines, commitIntakeRecords],
+  );
 
   const handleClearData = useCallback(() => {
-    storageService.clearAllData();
-    setMedicines(storageService.getMedicines()); // Reload medicines (will be default or empty based on storageService logic)
-    setIntakeRecords(storageService.getIntakeRecords()); // Reload records (will be empty)
+    // Persist first; only clear in-memory state once the wipe actually stuck,
+    // otherwise the UI would look empty while storage still holds the data.
+    if (!storageService.clearAllData()) {
+      toast.error("Couldn't clear data - storage may be full or unavailable.");
+      return;
+    }
+    medicinesRef.current = [];
+    intakeRecordsRef.current = [];
+    setMedicines([]);
+    setIntakeRecords([]);
     toast.success("All data cleared successfully!");
   }, []);
 
@@ -126,6 +189,7 @@ const App: React.FC = () => {
             records={intakeRecords}
             onDeleteRecord={handleDeleteRecord}
             onRestoreRecord={handleRestoreRecord}
+            onUpdateRecord={handleUpdateRecord}
           />
         );
       case "manage":

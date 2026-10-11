@@ -14,6 +14,7 @@ import {
   restoreMedicineItem,
   saveIntakeRecords,
   saveMedicines,
+  updateIntakeRecordItem,
 } from "./storageService";
 
 // Keys used by the storage service (kept in sync with the implementation).
@@ -66,14 +67,11 @@ const makeRecord = (
 
 describe("storageService", () => {
   let storage: LocalStorageMock;
-  let alertSpy: ReturnType<typeof vi.fn>;
   let errorSpy: MockInstance;
 
   beforeEach(() => {
     storage = new LocalStorageMock();
     vi.stubGlobal("localStorage", storage);
-    alertSpy = vi.fn();
-    vi.stubGlobal("alert", alertSpy);
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -98,6 +96,12 @@ describe("storageService", () => {
       storage.setItem(MEDICINES_KEY, JSON.stringify(stored));
 
       expect(getMedicines()).toEqual(stored);
+    });
+
+    it("does not re-seed defaults once the list has been explicitly cleared", () => {
+      storage.setItem(MEDICINES_KEY, "[]");
+
+      expect(getMedicines()).toEqual([]);
     });
 
     it("falls back to defaults when the stored JSON is corrupted", () => {
@@ -125,22 +129,21 @@ describe("storageService", () => {
   });
 
   describe("saveMedicines", () => {
-    it("serializes medicines into storage", () => {
+    it("serializes medicines into storage and reports success", () => {
       const medicines = [makeMedicine("a", "Aspirin")];
 
-      saveMedicines(medicines);
-
+      expect(saveMedicines(medicines)).toBe(true);
       expect(storage.getItem(MEDICINES_KEY)).toBe(JSON.stringify(medicines));
     });
 
-    it("does not throw when storage writes fail", () => {
+    it("returns false instead of throwing when a write fails", () => {
       vi.stubGlobal("localStorage", {
         setItem: () => {
           throw new Error("quota exceeded");
         },
       });
 
-      expect(() => saveMedicines([makeMedicine("a", "Aspirin")])).not.toThrow();
+      expect(saveMedicines([makeMedicine("a", "Aspirin")])).toBe(false);
       expect(errorSpy).toHaveBeenCalled();
     });
   });
@@ -166,17 +169,29 @@ describe("storageService", () => {
   });
 
   describe("saveIntakeRecords", () => {
-    it("serializes records into storage", () => {
+    it("serializes records into storage and reports success", () => {
       const records = [makeRecord("r1", "a", "Aspirin", 1000)];
 
-      saveIntakeRecords(records);
-
+      expect(saveIntakeRecords(records)).toBe(true);
       expect(storage.getItem(INTAKE_RECORDS_KEY)).toBe(JSON.stringify(records));
+    });
+
+    it("returns false instead of throwing when a write fails", () => {
+      vi.stubGlobal("localStorage", {
+        setItem: () => {
+          throw new Error("quota exceeded");
+        },
+      });
+
+      expect(saveIntakeRecords([makeRecord("r1", "a", "Aspirin", 1000)])).toBe(false);
+      expect(errorSpy).toHaveBeenCalled();
     });
   });
 
+  // The CRUD helpers below are pure: they return a new list and never touch
+  // storage (the app persists separately), so they are safe in state updaters.
   describe("addMedicineItem", () => {
-    it("appends a trimmed medicine and persists the updated list", () => {
+    it("appends a trimmed medicine with a generated id", () => {
       const existing = [makeMedicine("a", "Aspirin")];
 
       const updated = addMedicineItem(existing, "  Vitamin B12  ");
@@ -184,27 +199,12 @@ describe("storageService", () => {
       expect(updated).toHaveLength(2);
       expect(updated[1].name).toBe("Vitamin B12");
       expect(updated[1].id).toBeTruthy();
-      expect(JSON.parse(storage.getItem(MEDICINES_KEY) as string)).toEqual(updated);
       expect(existing).toHaveLength(1); // original array is untouched
     });
 
-    it("rejects an empty name and leaves the list unchanged", () => {
-      const existing = [makeMedicine("a", "Aspirin")];
+    it("does not persist or touch storage", () => {
+      addMedicineItem([], "Aspirin");
 
-      const updated = addMedicineItem(existing, "   ");
-
-      expect(updated).toBe(existing);
-      expect(alertSpy).toHaveBeenCalledWith("Medicine name cannot be empty.");
-      expect(storage.getItem(MEDICINES_KEY)).toBeNull();
-    });
-
-    it("rejects duplicates regardless of case and surrounding whitespace", () => {
-      const existing = [makeMedicine("a", "Aspirin")];
-
-      const updated = addMedicineItem(existing, "  aSPIRIN ");
-
-      expect(updated).toBe(existing);
-      expect(alertSpy).toHaveBeenCalledWith("Medicine with this name already exists.");
       expect(storage.getItem(MEDICINES_KEY)).toBeNull();
     });
 
@@ -217,13 +217,10 @@ describe("storageService", () => {
   });
 
   describe("deleteMedicineItem", () => {
-    it("removes the medicine with the given id and persists the change", () => {
+    it("removes the medicine with the given id", () => {
       const medicines = [makeMedicine("a", "Aspirin"), makeMedicine("b", "Ibuprofen")];
 
-      const updated = deleteMedicineItem(medicines, "a");
-
-      expect(updated).toEqual([makeMedicine("b", "Ibuprofen")]);
-      expect(JSON.parse(storage.getItem(MEDICINES_KEY) as string)).toEqual(updated);
+      expect(deleteMedicineItem(medicines, "a")).toEqual([makeMedicine("b", "Ibuprofen")]);
     });
 
     it("is a no-op when the id does not exist", () => {
@@ -234,14 +231,20 @@ describe("storageService", () => {
   });
 
   describe("restoreMedicineItem", () => {
-    it("re-appends a previously deleted medicine and persists it", () => {
-      const medicines = [makeMedicine("a", "Aspirin")];
-
-      const restored = restoreMedicineItem(medicines, makeMedicine("b", "Ibuprofen"));
+    it("re-appends a previously deleted medicine", () => {
+      const restored = restoreMedicineItem(
+        [makeMedicine("a", "Aspirin")],
+        makeMedicine("b", "Ibuprofen"),
+      );
 
       expect(restored).toHaveLength(2);
       expect(restored[1]).toEqual(makeMedicine("b", "Ibuprofen"));
-      expect(JSON.parse(storage.getItem(MEDICINES_KEY) as string)).toEqual(restored);
+    });
+
+    it("does not add a duplicate when the id already exists", () => {
+      const medicines = [makeMedicine("a", "Aspirin")];
+
+      expect(restoreMedicineItem(medicines, makeMedicine("a", "Aspirin"))).toBe(medicines);
     });
   });
 
@@ -256,19 +259,20 @@ describe("storageService", () => {
         timestamp: 1_700_000_000_000,
         details: "500mg",
       });
-      expect(JSON.parse(storage.getItem(INTAKE_RECORDS_KEY) as string)).toEqual(updated);
     });
 
     it("omits the details property when none is supplied", () => {
-      const updated = addIntakeRecordItem([], "a", "Aspirin", 1000);
-
-      expect(updated[0]).not.toHaveProperty("details");
+      expect(addIntakeRecordItem([], "a", "Aspirin", 1000)[0]).not.toHaveProperty("details");
     });
 
     it("omits the details property when it is only whitespace", () => {
-      const updated = addIntakeRecordItem([], "a", "Aspirin", 1000, "   ");
+      expect(addIntakeRecordItem([], "a", "Aspirin", 1000, "   ")[0]).not.toHaveProperty("details");
+    });
 
-      expect(updated[0]).not.toHaveProperty("details");
+    it("does not persist or touch storage", () => {
+      addIntakeRecordItem([], "a", "Aspirin", 1000);
+
+      expect(storage.getItem(INTAKE_RECORDS_KEY)).toBeNull();
     });
 
     it("creates a unique id for each record", () => {
@@ -280,13 +284,10 @@ describe("storageService", () => {
   });
 
   describe("deleteIntakeRecordItem", () => {
-    it("removes the record with the given id and persists the change", () => {
+    it("removes the record with the given id", () => {
       const records = [makeRecord("r1", "a", "Aspirin", 1000), makeRecord("r2", "b", "Iron", 2000)];
 
-      const updated = deleteIntakeRecordItem(records, "r1");
-
-      expect(updated).toEqual([makeRecord("r2", "b", "Iron", 2000)]);
-      expect(JSON.parse(storage.getItem(INTAKE_RECORDS_KEY) as string)).toEqual(updated);
+      expect(deleteIntakeRecordItem(records, "r1")).toEqual([makeRecord("r2", "b", "Iron", 2000)]);
     });
 
     it("is a no-op when the id does not exist", () => {
@@ -297,25 +298,79 @@ describe("storageService", () => {
   });
 
   describe("restoreIntakeRecord", () => {
-    it("re-appends a deleted record and persists it", () => {
+    it("re-appends a deleted record", () => {
       const records = [makeRecord("r1", "a", "Aspirin", 1000)];
-
       const restored = restoreIntakeRecord(records, makeRecord("r2", "b", "Iron", 2000));
 
       expect(restored).toEqual([...records, makeRecord("r2", "b", "Iron", 2000)]);
-      expect(JSON.parse(storage.getItem(INTAKE_RECORDS_KEY) as string)).toEqual(restored);
+    });
+
+    it("does not add a duplicate when the id already exists", () => {
+      const records = [makeRecord("r1", "a", "Aspirin", 1000)];
+
+      expect(restoreIntakeRecord(records, makeRecord("r1", "a", "Aspirin", 1000))).toBe(records);
+    });
+  });
+
+  describe("updateIntakeRecordItem", () => {
+    it("updates the timestamp of the matching record", () => {
+      const records = [makeRecord("r1", "a", "Aspirin", 1000)];
+
+      const updated = updateIntakeRecordItem(records, "r1", { timestamp: 5000 });
+
+      expect(updated[0]).toEqual(makeRecord("r1", "a", "Aspirin", 5000));
+    });
+
+    it("sets trimmed details", () => {
+      const records = [makeRecord("r1", "a", "Aspirin", 1000)];
+
+      const updated = updateIntakeRecordItem(records, "r1", { timestamp: 1000, details: " 5mg " });
+
+      expect(updated[0].details).toBe("5mg");
+    });
+
+    it("removes details when the new value is blank", () => {
+      const records = [makeRecord("r1", "a", "Aspirin", 1000, "500mg")];
+
+      const updated = updateIntakeRecordItem(records, "r1", { timestamp: 1000, details: "   " });
+
+      expect(updated[0]).not.toHaveProperty("details");
+    });
+
+    it("leaves other records untouched", () => {
+      const records = [makeRecord("r1", "a", "Aspirin", 1000), makeRecord("r2", "b", "Iron", 2000)];
+
+      const updated = updateIntakeRecordItem(records, "r1", { timestamp: 5000 });
+
+      expect(updated[1]).toEqual(makeRecord("r2", "b", "Iron", 2000));
+    });
+
+    it("returns an equal list when the id does not exist", () => {
+      const records = [makeRecord("r1", "a", "Aspirin", 1000)];
+
+      expect(updateIntakeRecordItem(records, "missing", { timestamp: 5000 })).toEqual(records);
     });
   });
 
   describe("clearAllData", () => {
-    it("removes both the medicines and intake records keys", () => {
+    it("clears both lists and keeps them cleared instead of re-seeding defaults", () => {
       saveMedicines([makeMedicine("a", "Aspirin")]);
       saveIntakeRecords([makeRecord("r1", "a", "Aspirin", 1000)]);
 
-      clearAllData();
+      expect(clearAllData()).toBe(true);
+      expect(getMedicines()).toEqual([]);
+      expect(getIntakeRecords()).toEqual([]);
+    });
 
-      expect(storage.getItem(MEDICINES_KEY)).toBeNull();
-      expect(storage.getItem(INTAKE_RECORDS_KEY)).toBeNull();
+    it("reports failure when storage writes fail", () => {
+      vi.stubGlobal("localStorage", {
+        setItem: () => {
+          throw new Error("quota exceeded");
+        },
+      });
+
+      expect(clearAllData()).toBe(false);
+      expect(errorSpy).toHaveBeenCalled();
     });
   });
 
@@ -373,7 +428,7 @@ describe("storageService", () => {
     const jsonFile = (content: string) =>
       new File([content], "medilog_data.json", { type: "application/json" });
 
-    it("imports valid data and persists it", async () => {
+    it("parses valid data and returns it without persisting", async () => {
       stubFileReader();
       const data = {
         medicines: [makeMedicine("a", "Aspirin")],
@@ -383,8 +438,9 @@ describe("storageService", () => {
       const result = await importData(jsonFile(JSON.stringify(data)));
 
       expect(result).toEqual({ success: true, ...data });
-      expect(JSON.parse(storage.getItem(MEDICINES_KEY) as string)).toEqual(data.medicines);
-      expect(JSON.parse(storage.getItem(INTAKE_RECORDS_KEY) as string)).toEqual(data.intakeRecords);
+      // Persistence is the caller's responsibility now.
+      expect(storage.getItem(MEDICINES_KEY)).toBeNull();
+      expect(storage.getItem(INTAKE_RECORDS_KEY)).toBeNull();
     });
 
     it("fails on malformed JSON", async () => {
@@ -394,7 +450,6 @@ describe("storageService", () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toBeTruthy();
-      expect(storage.getItem(MEDICINES_KEY)).toBeNull();
     });
 
     it("fails when the payload is not a JSON object", async () => {
@@ -415,6 +470,33 @@ describe("storageService", () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toContain("not arrays");
+    });
+
+    it("fails when a medicine item is malformed", async () => {
+      stubFileReader();
+
+      const result = await importData(
+        jsonFile(JSON.stringify({ medicines: [{ id: 1, name: "Aspirin" }], intakeRecords: [] })),
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("medicines are malformed");
+    });
+
+    it("fails when an intake record is malformed", async () => {
+      stubFileReader();
+
+      const result = await importData(
+        jsonFile(
+          JSON.stringify({
+            medicines: [],
+            intakeRecords: [{ id: "r1", medicineId: "a", medicineName: "Aspirin" }],
+          }),
+        ),
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("intake records are malformed");
     });
 
     it("reports an error when the file cannot be read", async () => {
