@@ -5,6 +5,16 @@ All notable changes to MediLog will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-10-11
+
+### 🐛 Fixed
+
+- Service worker updates now apply on their own. The app no longer stays pinned to the previously cached version while a newer build sits unused in the background
+
+### 🔧 Changed
+
+- Switched the PWA to `registerType: "autoUpdate"`, which lets the plugin inject `skipWaiting` and `clientsClaim` together. The "New version available" prompt was removed because it could not take effect: under `registerType: "prompt"` the plugin injects neither flag, so a new worker activated without claiming open tabs and the prompt's reload appeared to do nothing
+
 ## [1.4.0] - 2026-10-11
 
 ### ✨ Added

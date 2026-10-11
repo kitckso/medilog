@@ -135,8 +135,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "prompt", // Let the app show a "new version" prompt instead of swapping silently
-      injectRegister: false, // Registration is handled by virtual:pwa-register/react in ReloadPrompt
+      // autoUpdate injects skipWaiting + clientsClaim (see vite-plugin-pwa index.js),
+      // so a new worker activates and claims open tabs without user interaction.
+      // A mid-session swap is harmless here: every action already persists to
+      // localStorage, so a reload costs at most the form being typed.
+      registerType: "autoUpdate",
+      injectRegister: "auto", // Injects the registration script; no ReloadPrompt needed
       workbox: {
         // Define which files to cache. Adjust as needed.
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest}"],
