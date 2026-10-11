@@ -170,11 +170,11 @@ export const importData = async (
         saveMedicines(medicines);
         saveIntakeRecords(intakeRecords);
         resolve({ success: true, medicines, intakeRecords });
-      } catch (e: any) {
+      } catch (e: unknown) {
         console.error("Error importing data:", e);
         resolve({
           success: false,
-          error: e.message || "Failed to parse or validate the imported file.",
+          error: e instanceof Error ? e.message : "Failed to parse or validate the imported file.",
         });
       }
     };

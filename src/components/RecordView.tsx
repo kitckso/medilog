@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
+import { formatTimeForInput, parseLocalDateTime, toLocalDateKey } from "@/lib/dateUtils";
 
 interface RecordViewProps {
   medicines: MedicineItem[];
@@ -19,32 +20,19 @@ interface RecordViewProps {
   onNavigateToManage: () => void;
 }
 
-const formatDateForInput = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-const formatTimeForInput = (date: Date): string => {
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
-};
-
 const RecordView: React.FC<RecordViewProps> = ({
   medicines,
   onRecordIntake,
   onNavigateToManage,
 }) => {
   const [selectedMedicineId, setSelectedMedicineId] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(formatDateForInput(new Date()));
+  const [selectedDate, setSelectedDate] = useState<string>(toLocalDateKey(new Date()));
   const [selectedTime, setSelectedTime] = useState<string>(formatTimeForInput(new Date()));
   const [details, setDetails] = useState<string>("");
 
   useEffect(() => {
     const now = new Date();
-    setSelectedDate(formatDateForInput(now));
+    setSelectedDate(toLocalDateKey(now));
     setSelectedTime(formatTimeForInput(now));
     // If there are medicines, pre-select the first one for convenience
     if (medicines.length > 0 && !selectedMedicineId) {
@@ -64,9 +52,7 @@ const RecordView: React.FC<RecordViewProps> = ({
 
     const selectedMedicine = medicines.find((m) => m.id === selectedMedicineId);
     if (selectedMedicine) {
-      const [year, month, day] = selectedDate.split("-").map(Number);
-      const [hours, minutes] = selectedTime.split(":").map(Number);
-      const timestamp = new Date(year, month - 1, day, hours, minutes).getTime();
+      const timestamp = parseLocalDateTime(selectedDate, selectedTime);
 
       if (isNaN(timestamp)) {
         toast.error("Invalid date or time selected.");
@@ -80,7 +66,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         setSelectedMedicineId("");
         setDetails("");
         const now = new Date();
-        setSelectedDate(formatDateForInput(now));
+        setSelectedDate(toLocalDateKey(now));
         setSelectedTime(formatTimeForInput(now));
         if (medicines.length > 0) {
           setSelectedMedicineId(medicines[0].id);

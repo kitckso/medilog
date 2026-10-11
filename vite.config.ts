@@ -127,6 +127,10 @@ export default defineConfig({
     ],
     options: {},
   },
+  test: {
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    environment: "node",
+  },
   plugins: [
     react(),
     tailwindcss(),

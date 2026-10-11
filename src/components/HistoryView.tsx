@@ -1,5 +1,13 @@
 import { TrashIcon } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import {
+  filterRecordsByLocalDay,
+  formatDateHeader,
+  formatLongDate,
+  formatTimeOfDay,
+  getRecordDateKeys,
+  sortRecordsByTimestampDesc,
+} from "@/lib/dateUtils";
 import type { IntakeRecord } from "../types";
 import Calendar from "./Calendar"; // Use the refactored Calendar component
 import { Button } from "./ui/button"; // Import Shadcn Button
@@ -20,62 +28,14 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date | null>(null);
 
-  const sortedRecords = useMemo(() => {
-    return [...records].sort((a, b) => b.timestamp - a.timestamp);
-  }, [records]);
+  const sortedRecords = useMemo(() => sortRecordsByTimestampDesc(records), [records]);
 
-  const datesWithRecords = useMemo(() => {
-    const dates = new Set<string>();
-    records.forEach((record) => {
-      const localDate = new Date(record.timestamp);
-      const year = localDate.getFullYear();
-      const month = (localDate.getMonth() + 1).toString().padStart(2, "0");
-      const day = localDate.getDate().toString().padStart(2, "0");
-      dates.add(`${year}-${month}-${day}`);
-    });
-    return dates;
-  }, [records]);
+  const datesWithRecords = useMemo(() => getRecordDateKeys(records), [records]);
 
   const recordsForSelectedDate = useMemo(() => {
     if (!selectedCalendarDate) return [];
-
-    const targetYear = selectedCalendarDate.getFullYear();
-    const targetMonth = selectedCalendarDate.getMonth();
-    const targetDay = selectedCalendarDate.getDate();
-
-    return sortedRecords.filter((record) => {
-      const recordLocalDate = new Date(record.timestamp);
-      return (
-        recordLocalDate.getFullYear() === targetYear &&
-        recordLocalDate.getMonth() === targetMonth &&
-        recordLocalDate.getDate() === targetDay
-      );
-    });
+    return filterRecordsByLocalDay(sortedRecords, selectedCalendarDate);
   }, [sortedRecords, selectedCalendarDate]);
-
-  const formatDateHeader = (timestamp: number) => {
-    const date = new Date(timestamp);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) return "Today";
-    if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (timestamp: number) => {
-    return new Date(timestamp).toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
 
   const renderListView = () => {
     if (sortedRecords.length === 0) {
@@ -119,7 +79,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
                         {record.medicineName}
                       </h4>
                       <span className="text-xs sm:text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full w-fit">
-                        {formatTime(record.timestamp)}
+                        {formatTimeOfDay(record.timestamp)}
                       </span>
                     </div>
                     {record.details && (
@@ -167,13 +127,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
         {selectedCalendarDate && (
           <div className="mt-4">
             <h3 className="text-lg font-semibold text-slate-700 mb-2 border-b pb-2">
-              Records for{" "}
-              {selectedCalendarDate.toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-              :
+              Records for {formatLongDate(selectedCalendarDate)}:
             </h3>
             {recordsForSelectedDate.length > 0 ? (
               <div className="space-y-3">
@@ -189,7 +143,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ records, onDeleteRecord, onRe
                             {record.medicineName}
                           </h4>
                           <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                            {formatTime(record.timestamp)}
+                            {formatTimeOfDay(record.timestamp)}
                           </span>
                         </div>
                         {record.details && (
