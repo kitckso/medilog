@@ -52,17 +52,16 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({ medicine, o
       style={style}
       className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg border-l-4 border-l-sky-400"
     >
-      <div
+      <button
+        type="button"
         className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
         {...listeners}
         {...attributes}
-        role="button"
-        tabIndex={0}
         aria-label="Drag to reorder medicine"
         style={{ touchAction: "none" }}
       >
         <GripVerticalIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-      </div>
+      </button>
       <span className="flex-grow text-slate-800 ml-2 sm:ml-3 font-medium text-sm sm:text-base">
         {medicine.name}
       </span>
@@ -165,7 +164,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
           </div>
           <Button
             type="submit"
-            className="w-full bg-sky-500 hover:bg-sky-600 text-white text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+            className="w-full bg-sky-500 hover:bg-sky-600 text-white text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 ease-in-out"
           >
             <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Add Medicine
           </Button>

@@ -26,8 +26,8 @@ const RecordView: React.FC<RecordViewProps> = ({
   onNavigateToManage,
 }) => {
   const [selectedMedicineId, setSelectedMedicineId] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(toLocalDateKey(new Date()));
-  const [selectedTime, setSelectedTime] = useState<string>(formatTimeForInput(new Date()));
+  const [selectedDate, setSelectedDate] = useState<string>(() => toLocalDateKey(new Date()));
+  const [selectedTime, setSelectedTime] = useState<string>(() => formatTimeForInput(new Date()));
   const [details, setDetails] = useState<string>("");
 
   useEffect(() => {
