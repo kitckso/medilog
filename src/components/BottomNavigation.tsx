@@ -18,28 +18,32 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavi
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)] flex justify-around p-2 border-t border-slate-200 z-50">
-      {navItems.map((item) => {
-        const isActive = currentView === item.view;
-        const IconComponent = item.icon;
-        return (
-          <Button
-            key={item.view}
-            variant="ghost" // Use ghost variant for a cleaner look
-            onClick={() => onNavigate(item.view)}
-            className={`flex flex-col items-center justify-center p-2 rounded-lg w-1/4 h-auto
+    <nav className="fixed bottom-0 left-0 right-0 bg-card shadow-[0_-2px_8px_rgba(0,0,0,0.06)] border-t border-slate-200 z-50">
+      <div className="mx-auto flex w-full max-w-2xl justify-around p-2">
+        {navItems.map((item) => {
+          const isActive = currentView === item.view;
+          const IconComponent = item.icon;
+          return (
+            <Button
+              key={item.view}
+              variant="ghost" // Use ghost variant for a cleaner look
+              onClick={() => onNavigate(item.view)}
+              className={`flex flex-col items-center justify-center p-2 rounded-lg w-1/4 h-auto
                         ${isActive ? "text-sky-600 bg-sky-100 hover:bg-sky-100/90" : "text-slate-600 hover:bg-slate-100"}`}
-            aria-label={`Navigate to ${item.label}`}
-          >
-            <IconComponent
-              className={`w-6 h-6 mb-1 ${isActive ? "text-sky-600" : "text-slate-500"}`}
-            />
-            <span className={`text-xs font-medium ${isActive ? "text-sky-700" : "text-slate-700"}`}>
-              {item.label}
-            </span>
-          </Button>
-        );
-      })}
+              aria-label={`Navigate to ${item.label}`}
+            >
+              <IconComponent
+                className={`w-6 h-6 mb-1 ${isActive ? "text-sky-600" : "text-slate-500"}`}
+              />
+              <span
+                className={`text-xs font-medium ${isActive ? "text-sky-700" : "text-slate-700"}`}
+              >
+                {item.label}
+              </span>
+            </Button>
+          );
+        })}
+      </div>
     </nav>
   );
 };

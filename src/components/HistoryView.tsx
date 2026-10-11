@@ -69,7 +69,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         variant="ghost"
         size="icon"
         onClick={() => setEditingRecord(record)}
-        className="text-slate-400 hover:bg-sky-50 hover:text-sky-600"
+        className="text-slate-500 hover:bg-sky-50 hover:text-sky-600"
         aria-label={`Edit record for ${record.medicineName}`}
       >
         <PencilIcon className={sizeClasses} />
@@ -91,10 +91,10 @@ const HistoryView: React.FC<HistoryViewProps> = ({
       return (
         <div className="text-center py-8 sm:py-12">
           <div className="bg-slate-50 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-            <TrashIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+            <TrashIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-500" />
           </div>
           <p className="text-slate-500 text-base sm:text-lg">No intake history yet</p>
-          <p className="text-slate-400 text-xs sm:text-sm">
+          <p className="text-slate-500 text-xs sm:text-sm">
             Start recording your medications to see them here
           </p>
         </div>
@@ -105,7 +105,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
       return (
         <div className="text-center py-8 sm:py-12">
           <p className="text-slate-500 text-base sm:text-lg">No matching records</p>
-          <p className="text-slate-400 text-xs sm:text-sm">Try a different search term</p>
+          <p className="text-slate-500 text-xs sm:text-sm">Try a different search term</p>
         </div>
       );
     }
@@ -214,7 +214,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Intake History</h2>
         <p className="text-sm sm:text-base text-slate-600">
@@ -242,13 +242,13 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg sm:rounded-xl mb-4 sm:mb-6">
           <TabsTrigger
             value="list"
-            className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base"
+            className="rounded-md sm:rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm text-sm sm:text-base"
           >
             List View
           </TabsTrigger>
           <TabsTrigger
             value="calendar"
-            className="rounded-md sm:rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm text-sm sm:text-base"
+            className="rounded-md sm:rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm text-sm sm:text-base"
           >
             Calendar View
           </TabsTrigger>

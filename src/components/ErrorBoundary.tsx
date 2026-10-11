@@ -26,7 +26,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 p-6 text-center">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
           <h1 className="text-xl font-bold text-slate-800">Something went wrong</h1>
           <p className="text-slate-600">
             An unexpected error occurred. Reloading usually fixes it. Your data is safe on this
@@ -35,7 +35,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="rounded-lg bg-sky-500 px-4 py-2 font-medium text-white hover:bg-sky-600"
+            className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90"
           >
             Reload
           </button>

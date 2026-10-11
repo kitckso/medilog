@@ -51,11 +51,11 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({ medicine, o
     <Card
       ref={setNodeRef}
       style={style}
-      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-white border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg border-l-4 border-l-sky-400"
+      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-card border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg border-l-4 border-l-sky-400"
     >
       <button
         type="button"
-        className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
+        className="text-slate-500 hover:text-slate-700 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
         {...listeners}
         {...attributes}
         aria-label="Drag to reorder medicine"
@@ -138,7 +138,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl">
+    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
       <div className="text-center">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Manage Medicines</h2>
         <p className="text-sm sm:text-base text-slate-600">
@@ -146,7 +146,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
         </p>
       </div>
 
-      <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
+      <div className="bg-card rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">
           Add New Medicine/Supplement
         </h3>
@@ -166,14 +166,14 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
           </div>
           <Button
             type="submit"
-            className="w-full bg-sky-500 hover:bg-sky-600 text-white text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 ease-in-out"
+            className="w-full text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 ease-in-out"
           >
             <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Add Medicine
           </Button>
         </form>
       </div>
 
-      <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
+      <div className="bg-card rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
           <h3 className="text-base sm:text-lg font-semibold text-slate-800">
             Your Medicines ({medicines.length})
@@ -185,10 +185,10 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
         {medicines.length === 0 ? (
           <div className="text-center py-6 sm:py-8">
             <div className="bg-slate-50 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <PlusIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+              <PlusIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-500" />
             </div>
             <p className="text-slate-500 text-base sm:text-lg">No medicines added yet</p>
-            <p className="text-slate-400 text-xs sm:text-sm">
+            <p className="text-slate-500 text-xs sm:text-sm">
               Add your first medicine above to get started
             </p>
           </div>

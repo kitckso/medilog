@@ -50,7 +50,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
 
   return (
     <>
-      <div className="p-4 sm:p-6 space-y-6 sm:space-y-8 max-w-2xl mx-auto">
+      <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
         <div className="text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Settings</h2>
           <p className="text-sm sm:text-base text-slate-600">
@@ -58,7 +58,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
           </p>
         </div>
 
-        <Card className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-slate-200">
+        <Card className="bg-card rounded-lg sm:rounded-xl shadow-sm border border-slate-200">
           <CardHeader className="pb-3 sm:pb-4">
             <CardTitle className="text-base sm:text-lg font-semibold text-slate-800">
               Data Management
@@ -71,8 +71,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
             {/* Export Section */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0 sm:space-x-4 p-3 sm:p-4 bg-slate-50 rounded-lg border border-slate-200">
               <div className="flex items-start space-x-3">
-                <div className="bg-blue-100 p-2 rounded-lg shrink-0">
-                  <Download className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                <div className="bg-sky-100 p-2 rounded-lg shrink-0">
+                  <Download className="h-4 w-4 sm:h-5 sm:w-5 text-sky-600" />
                 </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-semibold text-slate-800">Export Data</h3>
@@ -84,7 +84,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
               <Button
                 onClick={onExportData}
                 variant="outline"
-                className="bg-white hover:bg-blue-50 border-blue-200 text-blue-700 hover:text-blue-800 w-full sm:w-auto"
+                className="bg-card hover:bg-sky-50 border-sky-200 text-sky-700 hover:text-sky-800 w-full sm:w-auto"
               >
                 <Download className="w-4 h-4 mr-2" />
                 <span className="text-sm sm:text-base">Export</span>
@@ -112,7 +112,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
               <Button
                 onClick={handleImportClick}
                 variant="outline"
-                className="bg-white hover:bg-green-50 border-green-200 text-green-700 hover:text-green-800 w-full sm:w-auto"
+                className="bg-card hover:bg-green-50 border-green-200 text-green-700 hover:text-green-800 w-full sm:w-auto"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 <span className="text-sm sm:text-base">Import</span>
@@ -148,7 +148,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onExportData, onImportData,
               <Button
                 onClick={() => setClearDataDialogOpen(true)}
                 variant="destructive"
-                className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+                className="w-full sm:w-auto"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 <span className="text-sm sm:text-base">Clear Data</span>

@@ -83,11 +83,7 @@ const EditRecordForm: React.FC<EditRecordFormProps> = ({ record, onSave, onCance
         <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button
-          onClick={handleSave}
-          disabled={!isValid}
-          className="bg-sky-500 text-white hover:bg-sky-600"
-        >
+        <Button onClick={handleSave} disabled={!isValid}>
           Save
         </Button>
       </DialogFooter>

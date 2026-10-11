@@ -169,7 +169,7 @@ const App: React.FC = () => {
     if (isLoading) {
       return (
         <div className="p-4 text-center">
-          <div className="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
           <span className="text-slate-500">Loading...</span>
         </div>
       );
@@ -222,9 +222,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex flex-col flex-1 min-h-0 pb-20">{renderView()}</main>
+      <main className="flex flex-col flex-1 min-h-0 pb-20">
+        <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">{renderView()}</div>
+      </main>
       <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
       <Toaster position="top-center" />
     </div>

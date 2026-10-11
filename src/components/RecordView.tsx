@@ -73,10 +73,7 @@ const RecordView: React.FC<RecordViewProps> = ({
     return (
       <div className="p-4 text-center text-slate-600">
         <p className="mb-4">No medicines defined yet. Please add some medicines first.</p>
-        <Button
-          onClick={onNavigateToManage}
-          className="bg-sky-500 hover:bg-sky-600 text-white mx-auto"
-        >
+        <Button onClick={onNavigateToManage} className="mx-auto">
           <PlusIcon className="w-5 h-5 mr-2" /> Add Medicines
         </Button>
       </div>
@@ -89,7 +86,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         <h2 className="text-lg font-bold text-slate-800">Record Intake</h2>
         <p className="text-xs text-slate-600">Track your medicine and supplement intake</p>
 
-        <div className="mt-4 bg-white rounded-lg shadow-sm border border-slate-200 p-3">
+        <div className="mt-4 bg-card rounded-lg shadow-sm border border-slate-200 p-3">
           <Label className="block text-sm font-semibold text-slate-800 mb-2">Medicine</Label>
           <RadioGroup
             value={activeMedicineId}
@@ -127,7 +124,7 @@ const RecordView: React.FC<RecordViewProps> = ({
           )}
         </div>
 
-        <div className="mt-4 bg-white rounded-lg shadow-sm border border-slate-200 p-3">
+        <div className="mt-4 bg-card rounded-lg shadow-sm border border-slate-200 p-3">
           <Label className="block text-sm font-semibold text-slate-800 mb-2">When</Label>
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -158,7 +155,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         <Button
           onClick={handleRecord}
           disabled={!activeMedicineId || !selectedDate || !selectedTime}
-          className="w-full bg-sky-500 hover:bg-sky-600 text-white py-3 rounded-lg shadow disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 rounded-lg shadow disabled:cursor-not-allowed"
         >
           <PlusIcon className="w-4 h-4 mr-2" /> Record Intake
         </Button>
