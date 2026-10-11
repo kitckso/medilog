@@ -5,6 +5,61 @@ All notable changes to MediLog will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-10-11
+
+### ✨ Added
+
+- Unit test suite powered by Vitest through `vp test` (85 tests covering the storage service, date utilities, record filtering, and medicine-name validation)
+- Edit existing intake records from History (date, time, and details)
+- Search/filter intake history by medicine or details, applied to both the list and calendar views
+- PWA update prompt ("New version available") so users can reload into the latest version instead of a silent swap
+- Top-level error boundary: a render crash now shows a reload prompt instead of a blank screen
+- Pure `validateMedicineName` helper, with validation surfaced through toasts
+
+### 🔧 Changed
+
+- Migrated tooling to Vite+ (`vp dev`, `vp build`, `vp check`, `vp test`)
+- Storage-service list helpers are now pure; persistence is explicit, reports success, and surfaces write failures with an error toast
+- Data import now validates the shape of each medicine and record, not just the top-level arrays
+- Design tokens: sky/slate palette centralized in `:root`; the header, buttons, dialogs, and focus rings follow `--primary`/`--ring`, with a unified centered content shell and aligned bottom navigation
+- Extracted date helpers to `src/lib/dateUtils.ts` and moved `buttonVariants` into its own module
+
+### 🐛 Fixed
+
+- Selecting a different medicine no longer resets the chosen date/time to "now"
+- "Clear All Data" now persists empty lists, so the default medicines no longer reappear
+- Undo (restore) no longer creates duplicate medicines or intake records
+- Replaced an invalid `shadow-top` class and improved muted-text contrast (`slate-400` → `slate-500`)
+- Drag handle uses a native `<button>`; named transitions replace `transition-all`
+
+## [1.3.0] - 2026-05-01
+
+### ✨ Added
+
+- Undo action for deleted medicines and intake records (toast action)
+- App version badge in Settings
+
+### 🔧 Changed
+
+- Replaced confirmation dialogs with toast-based actions for deletions
+- Unified the accent color to sky-500 across views and removed a hardcoded green
+- Toaster moved to top-center for mobile and improved the loading spinner
+
+## [1.2.0] - 2026-05-01
+
+### ✨ Added
+
+- Enhanced drag-and-drop for reordering medicines
+
+### 🔧 Changed
+
+- Compacted the Record Intake view for mobile, with the button pinned to the bottom
+- Updated dependencies and switched to the standard React plugin
+
+### 🐛 Fixed
+
+- HistoryView full-width layout
+
 ## [1.1.1] - 2025-07-12
 
 ### 🐛 Bug Fixes
