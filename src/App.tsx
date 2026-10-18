@@ -9,6 +9,7 @@ import SettingsView from "./components/SettingsView"; // Import SettingsView
 import * as storageService from "./services/storageService";
 import type { AppView, IntakeRecord, MedicineItem } from "./types";
 import { Toaster } from "@/components/ui/sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner"; // Import toast
 
 const App: React.FC = () => {
@@ -167,10 +168,17 @@ const App: React.FC = () => {
 
   const renderView = () => {
     if (isLoading) {
+      // Skeleton placeholder shaped like the record screen it stands in for.
       return (
-        <div className="p-4 text-center">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-          <span className="text-slate-500">Loading...</span>
+        <div className="flex flex-1 flex-col p-4">
+          <Skeleton className="h-7 w-36" />
+          <Skeleton className="mt-2 h-4 w-48" />
+          <div className="mt-6 grid grid-cols-2 gap-2.5">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-28 rounded-2xl" />
+            ))}
+          </div>
+          <Skeleton className="mt-5 h-24 rounded-2xl" />
         </div>
       );
     }
@@ -179,6 +187,7 @@ const App: React.FC = () => {
         return (
           <RecordView
             medicines={medicines}
+            records={intakeRecords}
             onRecordIntake={handleRecordIntake}
             onNavigateToManage={() => setCurrentView("manage")}
           />
@@ -214,6 +223,7 @@ const App: React.FC = () => {
         return (
           <RecordView
             medicines={medicines}
+            records={intakeRecords}
             onRecordIntake={handleRecordIntake}
             onNavigateToManage={() => setCurrentView("manage")}
           />

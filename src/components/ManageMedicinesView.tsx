@@ -7,6 +7,7 @@ import type { MedicineItem } from "../types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { EmptyState } from "@/components/ui/empty-state";
 import { validateMedicineName } from "@/lib/validation";
 
 import {
@@ -51,29 +52,27 @@ const SortableMedicineItem: React.FC<SortableMedicineItemProps> = ({ medicine, o
     <Card
       ref={setNodeRef}
       style={style}
-      className="p-3 sm:p-4 flex flex-row items-center justify-between bg-card border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-lg border-l-4 border-l-sky-400"
+      className="bg-card flex flex-row items-center justify-between rounded-xl border border-border py-2.5 pl-2 pr-1.5 shadow-card transition-shadow duration-200 hover:shadow-float"
     >
       <button
         type="button"
-        className="text-slate-500 hover:text-slate-700 cursor-grab active:cursor-grabbing p-1 sm:p-2 rounded-lg hover:bg-slate-50 transition-colors duration-150"
+        className="text-muted-foreground hover:text-foreground hover:bg-muted cursor-grab rounded-lg p-1.5 transition-colors duration-150 active:cursor-grabbing"
         {...listeners}
         {...attributes}
         aria-label="Drag to reorder medicine"
         style={{ touchAction: "none" }}
       >
-        <GripVerticalIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <GripVerticalIcon className="w-4 h-4" />
       </button>
-      <span className="flex-grow text-slate-800 ml-2 sm:ml-3 font-medium text-sm sm:text-base">
-        {medicine.name}
-      </span>
+      <span className="text-foreground ml-1 flex-grow font-medium text-sm">{medicine.name}</span>
       <Button
         variant="ghost"
         size="icon"
         onClick={() => onDelete(medicine)}
-        className="text-red-400 hover:text-red-600 hover:bg-red-50 ml-1 sm:ml-2 shrink-0"
+        className="text-destructive/70 hover:text-destructive hover:bg-destructive/10 ml-1 shrink-0"
         aria-label={`Delete ${medicine.name}`}
       >
-        <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+        <TrashIcon className="w-4 h-4" />
       </Button>
     </Card>
   );
@@ -138,60 +137,43 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
   };
 
   return (
-    <div className="p-4 sm:p-6 space-y-6 sm:space-y-8">
+    <div className="space-y-4 p-4 sm:p-6">
       <div className="text-center">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Manage Medicines</h2>
-        <p className="text-sm sm:text-base text-slate-600">
+        <h2 className="text-xl font-bold tracking-tight">Manage Medicines</h2>
+        <p className="text-xs text-muted-foreground sm:text-sm">
           Add, reorder, and manage your medications and supplements
         </p>
       </div>
 
-      <div className="bg-card rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">
-          Add New Medicine/Supplement
-        </h3>
-        <form onSubmit={handleAdd} className="space-y-3 sm:space-y-4">
-          <div>
-            <label htmlFor="new-medicine" className="block text-sm font-medium text-slate-700 mb-2">
-              Medicine Name
-            </label>
-            <Input
-              id="new-medicine"
-              type="text"
-              value={newMedicineName}
-              onChange={(e) => setNewMedicineName(e.target.value)}
-              placeholder="e.g., Vitamin B12, Aspirin, Fish Oil"
-              className="w-full text-sm sm:text-base"
-            />
-          </div>
-          <Button
-            type="submit"
-            className="w-full text-base sm:text-lg py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-[background-color,box-shadow] duration-200 ease-in-out"
-          >
-            <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Add Medicine
+      <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+        <h3 className="mb-3 text-sm font-semibold">Add New Medicine/Supplement</h3>
+        <form onSubmit={handleAdd} className="flex flex-col gap-3 sm:flex-row">
+          <Input
+            id="new-medicine"
+            type="text"
+            value={newMedicineName}
+            onChange={(e) => setNewMedicineName(e.target.value)}
+            placeholder="e.g., Vitamin B12, Aspirin, Fish Oil"
+            className="w-full flex-1 text-sm"
+            aria-label="Medicine name"
+          />
+          <Button type="submit" className="w-full sm:w-auto sm:px-6">
+            <PlusIcon className="w-4 h-4" /> Add
           </Button>
         </form>
       </div>
 
-      <div className="bg-card rounded-lg sm:rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
-          <h3 className="text-base sm:text-lg font-semibold text-slate-800">
-            Your Medicines ({medicines.length})
-          </h3>
-          {medicines.length > 0 && (
-            <p className="text-xs sm:text-sm text-slate-500">Drag to reorder</p>
-          )}
+      <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h3 className="text-sm font-semibold">Your Medicines ({medicines.length})</h3>
+          {medicines.length > 0 && <p className="text-xs text-muted-foreground">Drag to reorder</p>}
         </div>
         {medicines.length === 0 ? (
-          <div className="text-center py-6 sm:py-8">
-            <div className="bg-slate-50 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <PlusIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-500" />
-            </div>
-            <p className="text-slate-500 text-base sm:text-lg">No medicines added yet</p>
-            <p className="text-slate-500 text-xs sm:text-sm">
-              Add your first medicine above to get started
-            </p>
-          </div>
+          <EmptyState
+            icon={PlusIcon}
+            title="No medicines added yet"
+            description="Add your first medicine above to get started"
+          />
         ) : (
           <DndContext
             sensors={sensors}
@@ -203,7 +185,7 @@ const ManageMedicinesView: React.FC<ManageMedicinesViewProps> = ({
               items={medicines.map((med) => med.id)}
               strategy={verticalListSortingStrategy}
             >
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {medicines.map((med) => (
                   <li key={med.id}>
                     <SortableMedicineItem medicine={med} onDelete={handleDelete} />

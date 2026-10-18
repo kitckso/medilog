@@ -70,9 +70,39 @@ export const filterRecordsByLocalDay = <T extends { timestamp: number }>(
   date: Date,
 ): T[] => records.filter((record) => isSameLocalDay(new Date(record.timestamp), date));
 
+/**
+ * Returns the records that fall on the current local day. The implicit clock
+ * read lives here so callers stay free of render-time `new Date()` calls.
+ */
+export const filterRecordsByToday = <T extends { timestamp: number }>(records: T[]): T[] =>
+  filterRecordsByLocalDay(records, new Date());
+
 /** Set of local `YYYY-MM-DD` keys that have at least one record. */
 export const getRecordDateKeys = <T extends { timestamp: number }>(records: T[]): Set<string> => {
   const keys = new Set<string>();
   records.forEach((record) => keys.add(toLocalDateKey(new Date(record.timestamp))));
   return keys;
+};
+
+/**
+ * Consecutive days ending today (or, when today has no record yet, yesterday)
+ * with at least one record. A gap anywhere before that ends the streak.
+ */
+export const getStreakDays = <T extends { timestamp: number }>(records: T[]): number => {
+  if (records.length === 0) return 0;
+  // Noon anchors each probe to an unambiguous calendar day across DST shifts.
+  const serial = (ts: number) => {
+    const d = new Date(ts);
+    return d.getFullYear() * 10_000 + (d.getMonth() + 1) * 100 + d.getDate();
+  };
+  const days = new Set(records.map((r) => serial(r.timestamp)));
+  const probe = new Date();
+  probe.setHours(12, 0, 0, 0);
+  if (!days.has(serial(probe.getTime()))) probe.setDate(probe.getDate() - 1);
+  let count = 0;
+  while (days.has(serial(probe.getTime()))) {
+    count += 1;
+    probe.setDate(probe.getDate() - 1);
+  }
+  return count;
 };

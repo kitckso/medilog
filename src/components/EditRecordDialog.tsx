@@ -42,7 +42,7 @@ const EditRecordForm: React.FC<EditRecordFormProps> = ({ record, onSave, onCance
     <>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label htmlFor="edit-record-date" className="mb-1 block text-xs text-slate-700">
+          <Label htmlFor="edit-record-date" className="mb-1 block text-xs text-muted-foreground">
             Date
           </Label>
           <Input
@@ -54,7 +54,7 @@ const EditRecordForm: React.FC<EditRecordFormProps> = ({ record, onSave, onCance
           />
         </div>
         <div>
-          <Label htmlFor="edit-record-time" className="mb-1 block text-xs text-slate-700">
+          <Label htmlFor="edit-record-time" className="mb-1 block text-xs text-muted-foreground">
             Time
           </Label>
           <Input
@@ -67,7 +67,7 @@ const EditRecordForm: React.FC<EditRecordFormProps> = ({ record, onSave, onCance
         </div>
       </div>
       <div>
-        <Label htmlFor="edit-record-details" className="mb-1 block text-xs text-slate-700">
+        <Label htmlFor="edit-record-details" className="mb-1 block text-xs text-muted-foreground">
           Details
         </Label>
         <Input

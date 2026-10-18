@@ -16,6 +16,7 @@ import { Button } from "./ui/button"; // Import Shadcn Button
 import { Card } from "./ui/card"; // Import Shadcn Card
 import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"; // Import Shadcn Tabs
+import { EmptyState } from "./ui/empty-state";
 import { toast } from "sonner";
 
 interface HistoryViewProps {
@@ -69,7 +70,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         variant="ghost"
         size="icon"
         onClick={() => setEditingRecord(record)}
-        className="text-slate-500 hover:bg-sky-50 hover:text-sky-600"
+        className="text-muted-foreground hover:bg-accent hover:text-accent-foreground"
         aria-label={`Edit record for ${record.medicineName}`}
       >
         <PencilIcon className={sizeClasses} />
@@ -78,7 +79,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         variant="ghost"
         size="icon"
         onClick={() => handleDelete(record)}
-        className="text-red-400 hover:bg-red-50 hover:text-red-600"
+        className="text-destructive/70 hover:bg-destructive/10 hover:text-destructive"
         aria-label={`Delete record for ${record.medicineName}`}
       >
         <TrashIcon className={sizeClasses} />
@@ -89,24 +90,21 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   const renderListView = () => {
     if (sortedRecords.length === 0) {
       return (
-        <div className="text-center py-8 sm:py-12">
-          <div className="bg-slate-50 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-            <TrashIcon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-500" />
-          </div>
-          <p className="text-slate-500 text-base sm:text-lg">No intake history yet</p>
-          <p className="text-slate-500 text-xs sm:text-sm">
-            Start recording your medications to see them here
-          </p>
-        </div>
+        <EmptyState
+          icon={TrashIcon}
+          title="No intake history yet"
+          description="Start recording your medications to see them here"
+        />
       );
     }
 
     if (filteredRecords.length === 0) {
       return (
-        <div className="text-center py-8 sm:py-12">
-          <p className="text-slate-500 text-base sm:text-lg">No matching records</p>
-          <p className="text-slate-500 text-xs sm:text-sm">Try a different search term</p>
-        </div>
+        <EmptyState
+          icon={PencilIcon}
+          title="No matching records"
+          description="Try a different search term"
+        />
       );
     }
 
@@ -122,29 +120,31 @@ const HistoryView: React.FC<HistoryViewProps> = ({
           return (
             <React.Fragment key={record.id}>
               {showDateHeader && (
-                <div className="flex items-center my-4 sm:my-6 first:mt-0">
-                  <div className="flex-grow border-t border-slate-200"></div>
-                  <h3 className="px-3 sm:px-4 text-sm sm:text-lg font-semibold text-slate-600 bg-slate-50 rounded-full py-1 sm:py-2">
+                <div className="my-4 flex items-center gap-3 sm:my-6 first:mt-0">
+                  <div className="flex-grow border-t border-border"></div>
+                  <h3 className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                     {currentDateHeader}
                   </h3>
-                  <div className="flex-grow border-t border-slate-200"></div>
+                  <div className="flex-grow border-t border-border"></div>
                 </div>
               )}
-              <Card className="p-3 sm:p-4 hover:shadow-md transition-shadow duration-200 border-l-4 border-l-sky-400">
+              <Card className="p-3 shadow-card transition-shadow duration-200 hover:shadow-float sm:p-4">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-                      <h4 className="font-semibold text-slate-800 text-base sm:text-lg">
+                      <h4 className="font-semibold text-foreground text-base sm:text-lg">
                         {record.medicineName}
                       </h4>
-                      <span className="text-xs sm:text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full w-fit">
+                      <span className="w-fit rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground tabular-nums sm:text-sm">
                         {formatTimeOfDay(record.timestamp)}
                       </span>
                     </div>
                     {record.details && (
-                      <div className="bg-sky-50 border border-sky-200 rounded-lg p-2 sm:p-3 mt-2 sm:mt-3">
-                        <p className="text-xs sm:text-sm font-medium text-sky-800 mb-1">Details:</p>
-                        <p className="text-xs sm:text-sm text-sky-700">{record.details}</p>
+                      <div className="mt-2 rounded-lg bg-muted/60 p-2 sm:mt-3 sm:p-3">
+                        <p className="mb-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                          Details:
+                        </p>
+                        <p className="text-xs text-foreground/80 sm:text-sm">{record.details}</p>
                       </div>
                     )}
                   </div>
@@ -172,7 +172,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         />
         {selectedCalendarDate && (
           <div className="mt-4">
-            <h3 className="text-lg font-semibold text-slate-700 mb-2 border-b pb-2">
+            <h3 className="mb-2 border-b pb-2 text-lg font-semibold">
               Records for {formatLongDate(selectedCalendarDate)}:
             </h3>
             {recordsForSelectedDate.length > 0 ? (
@@ -180,22 +180,24 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                 {recordsForSelectedDate.map((record) => (
                   <Card
                     key={record.id}
-                    className="p-4 hover:shadow-md transition-shadow duration-200 border-l-4 border-l-sky-400"
+                    className="p-4 shadow-card transition-shadow duration-200 hover:shadow-float"
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-semibold text-slate-800 text-lg">
+                          <h4 className="font-semibold text-foreground text-lg">
                             {record.medicineName}
                           </h4>
-                          <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                          <span className="rounded-full bg-muted px-2 py-1 text-sm text-muted-foreground tabular-nums">
                             {formatTimeOfDay(record.timestamp)}
                           </span>
                         </div>
                         {record.details && (
-                          <div className="bg-sky-50 border border-sky-200 rounded-lg p-3 mt-3">
-                            <p className="text-sm font-medium text-sky-800 mb-1">Details:</p>
-                            <p className="text-sm text-sky-700">{record.details}</p>
+                          <div className="mt-3 rounded-lg bg-muted/60 p-3">
+                            <p className="mb-1 text-sm font-medium text-muted-foreground">
+                              Details:
+                            </p>
+                            <p className="text-sm text-foreground/80">{record.details}</p>
                           </div>
                         )}
                       </div>
@@ -205,7 +207,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-slate-500 text-center py-4">No records for this day.</p>
+              <p className="text-muted-foreground py-4 text-center">No records for this day.</p>
             )}
           </div>
         )}
@@ -216,8 +218,8 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="text-center">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2">Intake History</h2>
-        <p className="text-sm sm:text-base text-slate-600">
+        <h2 className="mb-2 text-xl font-bold tracking-tight sm:text-2xl">Intake History</h2>
+        <p className="text-sm text-muted-foreground sm:text-base">
           View and manage your medication records
         </p>
       </div>
@@ -239,7 +241,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
         onValueChange={(value) => setViewMode(value as ViewMode)}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-2 bg-slate-100 p-1 rounded-lg sm:rounded-xl mb-4 sm:mb-6">
+        <TabsList className="mb-4 grid w-full grid-cols-2 sm:mb-6">
           <TabsTrigger
             value="list"
             className="rounded-md sm:rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-sm text-sm sm:text-base"

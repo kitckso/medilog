@@ -151,8 +151,8 @@ export default defineConfig({
         name: "MediLog", // Full name of your application
         short_name: "MediLog", // Short name for home screen icon
         description: "A simple app to track medicine and supplement intake",
-        theme_color: "#1e90ff", // Theme color for the browser UI (matches sky-600 in your header)
-        background_color: "#ffffff", // Background color for the splash screen
+        theme_color: "#f7f8fa", // Matches the app background (blurred header, not a solid primary bar)
+        background_color: "#f7f8fa", // Background color for the splash screen
         display: "standalone", // Makes the app feel more native (hides browser UI)
         icons: [
           {

@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vite-plus/test";
 import {
   filterRecordsByLocalDay,
+  filterRecordsByToday,
   formatDateHeader,
   formatLongDate,
   formatTimeForInput,
   formatTimeOfDay,
   getRecordDateKeys,
+  getStreakDays,
   isSameLocalDay,
   pad2,
   parseLocalDateTime,
@@ -203,6 +205,84 @@ describe("dateUtils", () => {
 
     it("returns an empty set when there are no records", () => {
       expect(getRecordDateKeys([])).toEqual(new Set());
+    });
+  });
+
+  describe("filterRecordsByToday", () => {
+    const todayMorning = new Date();
+    todayMorning.setHours(8, 0);
+    const todayEvening = new Date();
+    todayEvening.setHours(22, 0);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const records = [
+      { id: "a", timestamp: todayMorning.getTime() },
+      { id: "b", timestamp: yesterday.getTime() },
+      { id: "c", timestamp: todayEvening.getTime() },
+    ];
+
+    it("keeps only records on the current local day", () => {
+      expect(filterRecordsByToday(records).map((r) => r.id)).toEqual(["a", "c"]);
+    });
+
+    it("returns an empty array with no records", () => {
+      expect(filterRecordsByToday([])).toEqual([]);
+    });
+  });
+
+  describe("getStreakDays", () => {
+    const daysAgo = (n: number): number => {
+      const d = new Date();
+      d.setDate(d.getDate() - n);
+      return d.getTime();
+    };
+
+    it("returns 0 with no records", () => {
+      expect(getStreakDays([])).toBe(0);
+    });
+
+    it("counts today alone as a 1-day streak", () => {
+      expect(getStreakDays([{ timestamp: daysAgo(0) }])).toBe(1);
+    });
+
+    it("counts consecutive days back from today", () => {
+      const records = [
+        { timestamp: daysAgo(0) },
+        { timestamp: daysAgo(1) },
+        { timestamp: daysAgo(2) },
+      ];
+      expect(getStreakDays(records)).toBe(3);
+    });
+
+    it("collapses multiple records on the same day", () => {
+      const morning = new Date();
+      morning.setHours(9, 0);
+      const evening = new Date();
+      evening.setHours(21, 0);
+      expect(
+        getStreakDays([{ timestamp: morning.getTime() }, { timestamp: evening.getTime() }]),
+      ).toBe(1);
+    });
+
+    it("survives a missing today - a streak ending yesterday is still alive", () => {
+      expect(getStreakDays([{ timestamp: daysAgo(1) }])).toBe(1);
+    });
+
+    it("survives a missing today across several live days", () => {
+      expect(getStreakDays([{ timestamp: daysAgo(1) }, { timestamp: daysAgo(2) }])).toBe(2);
+    });
+
+    it("breaks on the first gap behind the streak", () => {
+      const records = [
+        { timestamp: daysAgo(0) },
+        { timestamp: daysAgo(1) },
+        { timestamp: daysAgo(3) },
+      ];
+      expect(getStreakDays(records)).toBe(2);
+    });
+
+    it("does not count a streak that ended two days ago", () => {
+      expect(getStreakDays([{ timestamp: daysAgo(2) }])).toBe(0);
     });
   });
 });

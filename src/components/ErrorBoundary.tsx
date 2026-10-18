@@ -27,8 +27,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     if (this.state.hasError) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-6 text-center">
-          <h1 className="text-xl font-bold text-slate-800">Something went wrong</h1>
-          <p className="text-slate-600">
+          <h1 className="text-xl font-bold text-foreground">Something went wrong</h1>
+          <p className="text-muted-foreground">
             An unexpected error occurred. Reloading usually fixes it. Your data is safe on this
             device.
           </p>

@@ -2,45 +2,46 @@
 import { CalendarDaysIcon, CogIcon, PillIcon, SettingsIcon } from "lucide-react";
 import React from "react";
 import type { AppView } from "../types";
-import { Button } from "./ui/button"; // Import Shadcn Button
 
 interface BottomNavigationProps {
   currentView: AppView;
   onNavigate: (view: AppView) => void;
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavigate }) => {
-  const navItems = [
-    { view: "record" as AppView, label: "Record", icon: PillIcon },
-    { view: "history" as AppView, label: "History", icon: CalendarDaysIcon },
-    { view: "manage" as AppView, label: "Manage", icon: CogIcon },
-    { view: "settings" as AppView, label: "Settings", icon: SettingsIcon },
-  ];
+const NAV_ITEMS: { view: AppView; label: string; icon: React.ElementType }[] = [
+  { view: "record", label: "Record", icon: PillIcon },
+  { view: "history", label: "History", icon: CalendarDaysIcon },
+  { view: "manage", label: "Manage", icon: CogIcon },
+  { view: "settings", label: "Settings", icon: SettingsIcon },
+];
 
+/**
+ * Floating segmented nav: a single outlined card instead of a full-width bar,
+ * with the active tab tinted rather than filled.
+ */
+const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavigate }) => {
   return (
-    <nav className="flex-shrink-0 border-t border-slate-200 bg-card shadow-[0_-2px_8px_rgba(0,0,0,0.06)] z-50">
-      <div className="mx-auto flex w-full max-w-2xl justify-around p-2">
-        {navItems.map((item) => {
-          const isActive = currentView === item.view;
-          const IconComponent = item.icon;
+    <nav
+      className="z-10 shrink-0 px-3 pt-1"
+      style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+    >
+      <div className="mx-auto grid w-full max-w-2xl grid-cols-4 gap-[3px] rounded-2xl border border-border bg-background/80 p-1 shadow-float backdrop-blur-xl backdrop-saturate-150">
+        {NAV_ITEMS.map(({ view, label, icon: Icon }) => {
+          const isActive = currentView === view;
           return (
-            <Button
-              key={item.view}
-              variant="ghost" // Use ghost variant for a cleaner look
-              onClick={() => onNavigate(item.view)}
-              className={`flex flex-col items-center justify-center p-2 rounded-lg w-1/4 h-auto
-                        ${isActive ? "text-sky-600 bg-sky-100 hover:bg-sky-100/90" : "text-slate-600 hover:bg-slate-100"}`}
-              aria-label={`Navigate to ${item.label}`}
+            <button
+              key={view}
+              type="button"
+              onClick={() => onNavigate(view)}
+              aria-current={isActive ? "page" : undefined}
+              aria-label={`Navigate to ${label}`}
+              className={`flex flex-col items-center gap-0.5 rounded-xl py-2 text-[10.5px] font-medium transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
+                isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent/60"
+              }`}
             >
-              <IconComponent
-                className={`w-6 h-6 mb-1 ${isActive ? "text-sky-600" : "text-slate-500"}`}
-              />
-              <span
-                className={`text-xs font-medium ${isActive ? "text-sky-700" : "text-slate-700"}`}
-              >
-                {item.label}
-              </span>
-            </Button>
+              <Icon className="size-[19px]" aria-hidden="true" />
+              {label}
+            </button>
           );
         })}
       </div>
