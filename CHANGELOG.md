@@ -5,6 +5,36 @@ All notable changes to MediLog will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-10-18
+
+A UI revamp driven by a prototype exploration of eight design directions (cards, lists, timelines, rings, focus mode, calendar-first). The "Tinted Calm" direction won and became this release.
+
+### ✨ Added
+
+- Dark mode with a real theme provider: a Light/System/Dark switch in Settings plus a quick toggle in the header. The saved theme is applied before first paint, so reloading in dark no longer flashes white, and the browser theme color follows the app background
+- Tap-to-log Record screen: tapping a medicine tile records the dose immediately, with quick time chips (Now, 15m ago, 30m ago, 1h ago, 2h ago) setting when it happened
+- "Custom dose" dialog to backfill a dose with an exact date, time, and details — the power path behind the one-tap flow
+- Taken-today indicator on each medicine tile (success dot) and a "N of M taken · X-day streak" summary, so logging leaves visible state
+- "Recent" list of today's doses on the Record screen
+- Shared `EmptyState`, `Skeleton` loading placeholder, and `Badge` primitives
+- `getStreakDays` and `filterRecordsByToday` date helpers, covered by 10 new unit tests (95 total)
+
+### 🔧 Changed
+
+- Design tokens retuned: neutrals tinted toward the brand hue instead of Tailwind slate, deeper brand blue, alpha borders, radius raised to 0.875rem, new `--success`/`--warning` tokens, and soft two-layer card/float shadows
+- Every hard-coded `slate`/`sky`/`red`/`green`/`amber` class across the views now resolves through those tokens, so light and dark read as one system
+- Header redesigned as a translucent blurred bar with a brand mark; bottom navigation is now a floating segmented card with the active tab tinted instead of filled. Both sit in the same content lane as the body, and respect safe-area insets
+- Record screen replaced the form-first flow with the tap-to-log grid; the old form still lives on as the custom-dose dialog
+- History, Manage, and Settings restyled: hairline date headers, soft-shadow cards instead of left-border markers, compact Manage rows with an inline add field, and Settings data rows with uniformly sized, aligned action buttons
+- Manage page resized to match the rest of the app (previously oversized headings, paddings, and an oversized add button)
+- Calendar "has records" dot now uses utility classes instead of an injected `<style>` block
+- Manifest and `<meta name="theme-color">` switched from solid brand blue to the app background, matching the translucent header
+
+### 🐛 Fixed
+
+- Export and Import buttons no longer look disabled in dark mode (the outline variant's dark fill rendered as washed-out gray)
+- The Import button now aligns with the other Settings action buttons; the hidden file input used to pull it off the right edge
+
 ## [1.4.2] - 2026-10-11
 
 ### 🐛 Fixed
