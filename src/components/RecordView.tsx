@@ -39,13 +39,15 @@ interface RecordViewProps {
   onNavigateToManage: () => void;
 }
 
-/** Quick offsets for the "when did you take it" chips (minutes back from now). */
+/** Quick offsets for the "when did you take it" chips (minutes back from now).
+ * `label` is the compact chip text; `description` is the expanded form used for
+ * screen readers and the confirmation toast. */
 const TIME_OPTIONS = [
-  { label: "Now", minutes: 0 },
-  { label: "15m ago", minutes: 15 },
-  { label: "30m ago", minutes: 30 },
-  { label: "1h ago", minutes: 60 },
-  { label: "2h ago", minutes: 120 },
+  { label: "Now", minutes: 0, description: "Now" },
+  { label: "15m", minutes: 15, description: "15 minutes ago" },
+  { label: "30m", minutes: 30, description: "30 minutes ago" },
+  { label: "1h", minutes: 60, description: "1 hour ago" },
+  { label: "2h", minutes: 120, description: "2 hours ago" },
 ] as const;
 
 // Module scope so the render-time purity lint stays clean (same trick as the
@@ -82,9 +84,8 @@ const RecordView: React.FC<RecordViewProps> = ({
     onRecordIntake(med.id, med.name, timestamp);
     setFlashedId(med.id);
     setTimeout(() => setFlashedId(null), 450);
-    toast.success(
-      `${med.name} logged${offsetMinutes ? ` (${TIME_OPTIONS.find((t) => t.minutes === offsetMinutes)?.label})` : ""}`,
-    );
+    const offset = TIME_OPTIONS.find((t) => t.minutes === offsetMinutes)?.description;
+    toast.success(offsetMinutes ? `${med.name} logged (${offset})` : `${med.name} logged`);
   };
 
   const handleOpenCustom = () => {
@@ -143,15 +144,21 @@ const RecordView: React.FC<RecordViewProps> = ({
         </p>
       </header>
 
-      {/* When-did-you-take chips; the selection applies to every next tap. */}
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-        {TIME_OPTIONS.map(({ label, minutes }) => (
+      {/* When-did-you-take chips; the selection applies to every next tap.
+          Wraps instead of scrolling so no scrollbar ever shows on mobile. */}
+      <div
+        role="group"
+        aria-label="When did you take it"
+        className="mt-3 flex flex-wrap gap-1.5 sm:gap-2"
+      >
+        {TIME_OPTIONS.map(({ label, minutes, description }) => (
           <button
             key={minutes}
             type="button"
             onClick={() => setOffsetMinutes(minutes)}
             aria-pressed={offsetMinutes === minutes}
-            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+            aria-label={description}
+            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
               offsetMinutes === minutes
                 ? "border-transparent bg-primary text-primary-foreground"
                 : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
