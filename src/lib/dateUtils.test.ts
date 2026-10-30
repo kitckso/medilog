@@ -2,8 +2,10 @@ import { describe, expect, it } from "vite-plus/test";
 import {
   filterRecordsByLocalDay,
   filterRecordsByToday,
+  formatCompactDate,
   formatDateHeader,
   formatLongDate,
+  formatShortDate,
   formatTimeForInput,
   formatTimeOfDay,
   getRecordDateKeys,
@@ -139,6 +141,36 @@ describe("dateUtils", () => {
     it("formats a long localized date", () => {
       expect(formatLongDate(new Date(2026, 9, 11))).toBe("October 11, 2026");
       expect(formatLongDate(new Date(2026, 0, 5))).toBe("January 5, 2026");
+    });
+  });
+
+  describe("formatShortDate", () => {
+    const reference = new Date(2026, 9, 11, 12, 0);
+
+    it("formats a compact month and day", () => {
+      expect(formatShortDate(new Date(2026, 9, 9, 10, 0).getTime(), reference)).toBe("Oct 9");
+    });
+
+    it("includes the year only when it differs from the reference", () => {
+      expect(formatShortDate(new Date(2025, 11, 31).getTime(), reference)).toBe("Dec 31, 2025");
+    });
+  });
+
+  describe("formatCompactDate", () => {
+    const reference = new Date(2026, 9, 11, 12, 0);
+
+    it("labels the reference day as Today", () => {
+      expect(formatCompactDate(new Date(2026, 9, 11, 8, 0).getTime(), reference)).toBe("Today");
+    });
+
+    it("labels the previous day as Yesterday", () => {
+      expect(formatCompactDate(new Date(2026, 9, 10, 23, 0).getTime(), reference)).toBe(
+        "Yesterday",
+      );
+    });
+
+    it("falls back to a short date for older days", () => {
+      expect(formatCompactDate(new Date(2026, 9, 9, 10, 0).getTime(), reference)).toBe("Oct 9");
     });
   });
 

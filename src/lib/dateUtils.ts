@@ -60,6 +60,33 @@ export const formatTimeOfDay = (timestamp: number): string =>
 export const formatLongDate = (date: Date): string =>
   date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
+/**
+ * Compact localized date, e.g. `Oct 9`. The year is included only when it
+ * differs from `reference`, keeping nearby dates short.
+ */
+export const formatShortDate = (timestamp: number, reference: Date = new Date()): string => {
+  const date = new Date(timestamp);
+  const sameYear = date.getFullYear() === reference.getFullYear();
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    ...(sameYear ? {} : { year: "numeric" }),
+  });
+};
+
+/**
+ * Compact date label: `Today`, `Yesterday`, or a short date such as `Oct 9`.
+ * Useful where a full header date would dominate the layout.
+ */
+export const formatCompactDate = (timestamp: number, reference: Date = new Date()): string => {
+  const date = new Date(timestamp);
+  if (isSameLocalDay(date, reference)) return "Today";
+  const yesterday = new Date(reference);
+  yesterday.setDate(reference.getDate() - 1);
+  if (isSameLocalDay(date, yesterday)) return "Yesterday";
+  return formatShortDate(timestamp, reference);
+};
+
 /** Returns a copy of the records sorted newest first (input is not mutated). */
 export const sortRecordsByTimestampDesc = <T extends { timestamp: number }>(records: T[]): T[] =>
   [...records].sort((a, b) => b.timestamp - a.timestamp);

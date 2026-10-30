@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { IntakeRecord, MedicineItem } from "../types";
 import {
   filterRecordsByToday,
+  formatCompactDate,
   formatTimeForInput,
   formatTimeOfDay,
   getStreakDays,
@@ -71,7 +72,10 @@ const RecordView: React.FC<RecordViewProps> = ({
   const takenToday = new Map<string, number>();
   for (const r of sortRecordsByTimestampDesc(today)) takenToday.set(r.medicineId, r.timestamp);
   const streak = getStreakDays(records);
-  const recent = sortRecordsByTimestampDesc(today).slice(0, 4);
+  // Latest doses regardless of day; the list labels anything older than today
+  // with its date so "Recent" doesn't silently stop at midnight.
+  const recent = sortRecordsByTimestampDesc(records).slice(0, 5);
+  const todayIds = new Set(today.map((r) => r.id));
 
   const recordNow = (med: MedicineItem) => {
     const timestamp = timestampForOffset(offsetMinutes);
@@ -203,7 +207,7 @@ const RecordView: React.FC<RecordViewProps> = ({
         </button>
       </div>
 
-      {/* Today's log, most recent first. */}
+      {/* Latest doses, most recent first across all days. */}
       <section className="mt-5">
         <h3 className="pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
           Recent
@@ -219,7 +223,8 @@ const RecordView: React.FC<RecordViewProps> = ({
                 key={r.id}
                 className="flex items-center gap-3 border-b border-border/60 py-2.5 last:border-0"
               >
-                <span className="w-[62px] shrink-0 text-xs text-muted-foreground tabular-nums">
+                <span className="w-32 shrink-0 whitespace-nowrap text-xs text-muted-foreground tabular-nums">
+                  {!todayIds.has(r.id) && `${formatCompactDate(r.timestamp)} · `}
                   {formatTimeOfDay(r.timestamp)}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">

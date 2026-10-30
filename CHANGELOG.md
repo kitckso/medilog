@@ -5,6 +5,12 @@ All notable changes to MediLog will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-10-30
+
+### 🔧 Changed
+
+- The Record screen's "Recent" list now shows the five latest doses across all days instead of only today's. Entries from earlier days carry a compact date (`Yesterday · 9:05 AM`, `Oct 9 · 2:30 PM`), so the list no longer looks empty after midnight
+
 ## [2.0.0] - 2026-10-18
 
 A UI revamp driven by a prototype exploration of eight design directions (cards, lists, timelines, rings, focus mode, calendar-first). The "Tinted Calm" direction won and became this release.
