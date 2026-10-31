@@ -27,8 +27,14 @@ const Calendar: React.FC<CalendarProps> = ({
     },
   };
 
+  // react-day-picker v9 has no `data-highlighted` attribute: a custom modifier
+  // only contributes class names, so the "day has records" styling has to live
+  // here rather than behind a `data-[highlighted]:` variant that never matches.
+  // The extra `[&[data-today]]` variant keeps the record colour winning over
+  // today's accent colour when the two land on the same cell.
   const modifiersClassNames = {
-    highlighted: "font-semibold relative",
+    highlighted:
+      "font-semibold text-success [&[data-today]]:text-success after:content-[''] after:bg-success data-[selected=true]:after:bg-primary-foreground",
   };
 
   return (
@@ -46,11 +52,9 @@ const Calendar: React.FC<CalendarProps> = ({
           day: cn(
             "h-9 w-9 p-0 font-normal aria-selected:opacity-100 relative",
             "after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:size-1 after:rounded-full",
-            "data-[highlighted]:font-semibold data-[highlighted]:text-success data-[highlighted]:after:content-[''] data-[highlighted]:after:bg-success",
-            "data-[state=selected]:bg-primary data-[state=selected]:text-primary-foreground data-[state=selected]:font-semibold",
-            "data-[state=selected]:hover:bg-primary data-[state=selected]:hover:text-primary-foreground",
-            "data-[state=selected]:data-[highlighted]:after:content-[''] data-[state=selected]:data-[highlighted]:after:bg-primary-foreground",
-            "data-[today]:bg-accent data-[today]:text-accent-foreground data-[today]:font-bold data-[today]:hover:bg-accent",
+            "data-[selected=true]:bg-primary data-[selected=true]:text-primary-foreground data-[selected=true]:font-semibold",
+            "data-[selected=true]:hover:bg-primary data-[selected=true]:hover:text-primary-foreground",
+            "data-[today=true]:bg-accent data-[today=true]:text-accent-foreground data-[today=true]:font-bold data-[today=true]:hover:bg-accent",
           ),
           day_selected:
             "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
