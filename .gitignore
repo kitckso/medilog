@@ -24,3 +24,6 @@ dev-dist
 *.sln
 *.sw?
 .vitest/
+
+# Local agent skills - personal tooling, never committed
+.agents/skills/
