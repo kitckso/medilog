@@ -5,6 +5,16 @@ All notable changes to MediLog will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.3] - 2026-10-31
+
+### 🐛 Fixed
+
+- The History calendar marks days that have records with a green dot again. The 2.0.0 revamp moved the marker from an injected `<style>` block to Tailwind's `data-[highlighted]:` variant, but react-day-picker v9 never sets that attribute, so the marker silently stopped rendering. The styling now lives in `modifiersClassNames`, the API v9 actually supports, and the selected-day and today variants use v9's `data-selected` / `data-today` attributes
+
+### 📚 Documentation
+
+- The README screenshots were re-taken against the current UI and the usage steps were rewritten to match it: the tap-to-log Record screen with its time chips and "Custom dose…" dialog, the "N of M taken · X-day streak" summary, the Recent list, the History search field, the edit/undo-toast flow, drag-to-reorder in Manage, and the Settings tab
+
 ## [2.0.2] - 2026-10-30
 
 ### 🐛 Fixed

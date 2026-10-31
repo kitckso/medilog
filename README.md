@@ -46,32 +46,38 @@ To get the project up and running on your local machine, follow these steps:
 
 ## 🚀 Usage
 
-Upon launching the application, you'll be greeted with the "Record Intake" view.
+Upon launching the application, you'll be greeted with the "Today" view.
 
 1.  **Record View**:
     - If no medicines are added yet, you'll be prompted to navigate to the "Manage" section to add some.
-    - Select the date and time for the intake.
-    - Choose a medicine from your list.
-    - Click "Record Intake" to save the entry. A success message will briefly appear.
+    - Pick a time chip (`Now`, `15m`, `30m`, `1h`, `2h`) to set when the dose was taken.
+    - Tap a medicine tile to log it right away. A success message will briefly appear, and the tile shows a green check plus a "N of M taken · X-day streak" summary.
+    - Use "Custom dose…" to backfill a dose with an exact date, time, and details.
+    - The "Recent" list below shows your latest doses across all days.
 
 2.  **History View**:
     - Navigate to the "History" tab using the bottom navigation.
-    - View your intake records in a chronological list.
-    - Switch to "Calendar" view to see which days have recorded intakes (highlighted in green).
+    - View your intake records in a chronological list, or search them by medicine or details.
+    - Switch to "Calendar View" to see which days have recorded intakes (marked with a green dot).
     - Click on a specific day in the calendar to see records for that day.
-    - Use the trash icon next to any record to delete it. A confirmation dialog will appear.
+    - Use the pencil icon to edit a record, or the trash icon to delete it. Deleted records can be restored from the undo toast.
 
 3.  **Manage View**:
     - Navigate to the "Manage" tab using the bottom navigation.
     - Use the "Add New Medicine/Supplement" form to add new items to your list.
-    - Your existing medicines are displayed below. Use the trash icon next to a medicine to delete it from your list. Note that deleting a medicine here does not remove its past intake records.
+    - Your existing medicines are displayed below. Drag the handle to reorder them, or use the trash icon next to a medicine to delete it from your list. Note that deleting a medicine here does not remove its past intake records.
+
+4.  **Settings View**:
+    - Navigate to the "Settings" tab using the bottom navigation.
+    - Switch between the Light, Dark, and System themes, or toggle dark mode from the header.
+    - Export your data to a JSON file, import it back, or clear everything.
 
 ## 📸 Screenshots
 
 Here are some screenshots of MediLog running on a mobile device:
 
 <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; overflow-x: auto; padding-bottom: 10px;">
-    <img src="assets/images/screenshot1.png" alt="Screenshot of the Record Intake view" style="width: auto; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="assets/images/screenshot1.png" alt="Screenshot of the Today view with the tap-to-log medicine tiles" style="width: auto; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <img src="assets/images/screenshot2.png" alt="Screenshot of the History list view" style="width: auto; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <img src="assets/images/screenshot3.png" alt="Screenshot of the History Calendar view" style="width: auto; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <img src="assets/images/screenshot4.png" alt="Screenshot of the Manage Medicines view" style="width: auto; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
