@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="assets/images/medilog-banner.png" alt="MediLog — Medication tracking, made simple." style="width: 100%; max-width: 900px;">
+</div>
+
 # MediLog
 
 MediLog is a simple and intuitive web application designed to help you track your medicine and supplement intake. Built with React, TypeScript, and Tailwind Shadcn UI components, it provides a clean interface to record your daily doses, manage your list of medicines, and review your intake history.
